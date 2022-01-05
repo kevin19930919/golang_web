@@ -28,7 +28,7 @@ func BuildDBConfig() *DBConfig {
 }
 
 func InitDB(dbConfig *DBConfig) string {
-	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
+	return fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable",
 		dbConfig.Host,
 		dbConfig.Port,
 		dbConfig.User,
