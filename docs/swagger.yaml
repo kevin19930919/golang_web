@@ -1,0 +1,50 @@
+definitions:
+  model.CreateTodoModel:
+    properties:
+      completed:
+        type: integer
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/todo:
+    get:
+      responses:
+        "200":
+          description: '{"data":[{title:title1,complete:1},{title:title2,complete:0}]}'
+          schema:
+            type: string
+      summary: get all todo record
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: todo
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateTodoModel'
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: add todo record
+  /api/v1/todo/{title}:
+    get:
+      parameters:
+      - description: title
+        in: path
+        name: title
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"data":[{title:title,complete:1}]}'
+          schema:
+            type: string
+      summary: get todo record
+swagger: "2.0"

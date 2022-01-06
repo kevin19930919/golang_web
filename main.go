@@ -22,8 +22,7 @@ func setupServer() *gin.Engine {
 	constr = database.InitDB(database.BuildDBConfig())
 	database.DB, err = gorm.Open("postgres", constr)
 	if err != nil {
-		fmt.Println("%s", err)
-		panic("数据库连接失败")
+		fmt.Println("fail to connect database:%s", err)
 	}
 
 	database.DB.AutoMigrate(&model.TodoModel{})
@@ -31,7 +30,9 @@ func setupServer() *gin.Engine {
 	router := gin.Default()
 	v1 := router.Group("/api/v1/todo")
 	{
-		v1.POST("/", Controllers.CreateTodo)
+		v1.POST("", Controllers.CreateTodo)
+		v1.GET("", Controllers.GetAllTodo)
+		v1.GET("/:title", Controllers.GetTodo)
 	}
 
 	return router
