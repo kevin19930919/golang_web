@@ -1,4 +1,29 @@
 definitions:
+  model.CreateAccountModel:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  model.CreateBookModel:
+    properties:
+      title:
+        type: string
+    type: object
+  model.CreateOrder:
+    properties:
+      account_email:
+        type: string
+      book_title:
+        type: string
+      create_time:
+        type: string
+      remain_time:
+        type: number
+    type: object
   model.CreateTodoModel:
     properties:
       completed:
@@ -9,6 +34,99 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/account:
+    get:
+      responses:
+        "200":
+          description: '{"data":[{title:title1,complete:1},{title:title2,complete:0}]}'
+          schema:
+            type: string
+      summary: get all account record
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: account
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateAccountModel'
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: add account record
+  /api/v1/account/{email}:
+    get:
+      parameters:
+      - description: email
+        in: path
+        name: email
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"data":[{email:example@.xxx.com,complete:1}]}'
+          schema:
+            type: string
+      summary: get account record
+  /api/v1/book:
+    get:
+      responses:
+        "200":
+          description: '{"data":[{title:title1,complete:1},{title:title2,complete:0}]}'
+          schema:
+            type: string
+      summary: get all book record
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: book
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateBookModel'
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: add book record
+  /api/v1/book/{title}:
+    get:
+      parameters:
+      - description: title
+        in: path
+        name: title
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"data":[{title:title,complete:1}]}'
+          schema:
+            type: string
+      summary: get book record
+  /api/v1/order:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: order
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateOrder'
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: add order record
   /api/v1/todo:
     get:
       responses:

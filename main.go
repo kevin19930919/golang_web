@@ -25,7 +25,7 @@ func setupServer() *gin.Engine {
 		fmt.Println("fail to connect database:%s", err)
 	}
 
-	database.DB.AutoMigrate(&model.TodoModel{})
+	database.DB.AutoMigrate(&model.TodoModel{}, &model.Account{}, &model.Book{}, &model.Order{})
 
 	router := gin.Default()
 	v1 := router.Group("/api/v1/todo")
@@ -33,6 +33,25 @@ func setupServer() *gin.Engine {
 		v1.POST("", Controllers.CreateTodo)
 		v1.GET("", Controllers.GetAllTodo)
 		v1.GET("/:title", Controllers.GetTodo)
+	}
+
+	v2 := router.Group("/api/v1/book")
+	{
+		v2.POST("", Controllers.CreateBook)
+		v2.GET("", Controllers.GetAllBook)
+		v2.GET("/:title", Controllers.GetBook)
+	}
+
+	v3 := router.Group("/api/v1/account")
+	{
+		v3.POST("", Controllers.CreateAccount)
+		v3.GET("", Controllers.GetAllAccount)
+		v3.GET("/:title", Controllers.GetAccount)
+	}
+
+	v4 := router.Group("/api/v1/order")
+	{
+		v4.POST("", Controllers.CreateOrder)
 	}
 
 	return router
