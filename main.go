@@ -8,6 +8,7 @@ import (
 	"golang_web/Controllers"
 	"golang_web/config"
 	"golang_web/model"
+	"net/http"
 )
 
 func main() {
@@ -28,6 +29,13 @@ func setupServer() *gin.Engine {
 	database.DB.AutoMigrate(&model.TodoModel{}, &model.Account{}, &model.Book{}, &model.Order{})
 
 	router := gin.Default()
+	router.LoadHTMLGlob("templates/*")
+	indexRouting := router.Group("/")
+	{
+		indexRouting.GET("", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.html", nil)
+		})
+	}
 	v1 := router.Group("/api/v1/todo")
 	{
 		v1.POST("", Controllers.CreateTodo)

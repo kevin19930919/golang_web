@@ -15,15 +15,10 @@ type (
 	GetBookModel struct {
 		ID string `json:"BookID"`
 	}
-
-	CreateBookModel struct {
-		Title string `json:"title"`
-	}
 )
 
 //CreateBook ... Insert New data
 func CreatetBook(book *Book) (err error) {
-	book.ID = CreateBookID(book.Title)
 	fmt.Println("create book:%s", book)
 	if err = database.DB.Create(book).Error; err != nil {
 		return err

@@ -9,7 +9,7 @@ import (
 
 // @Summary add book record
 // @Accept  json
-// @Param title body model.CreateBookModel true "book"
+// @Param title body model.Book true "book"
 // @Success 200 {string} json "{"msg":"ok"}"
 // @Router /api/v1/book [post]
 func CreateBook(context *gin.Context) {
