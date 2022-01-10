@@ -28,8 +28,6 @@ func CreateOrder(context *gin.Context) {
 	email := json["account_email"]
 	model.GetBook(&book, title)
 	model.GetAccount(&account, email)
-	fmt.Println("book:%s", &book)
-	fmt.Println("account:%s", &account)
 	if err := model.CreatetOrder(&order, &book, &account); err != nil {
 		fmt.Println(err.Error())
 		context.AbortWithStatus(http.StatusNotFound)
@@ -52,10 +50,10 @@ func CreateOrder(context *gin.Context) {
 // 	}
 // }
 
-// // @Summary get order record
+// // @Summary get order record by account
 // // @Param title path string true "title"
 // // @Success 200 {string} json "{"data":[{title:title,complete:1}]}"
-// // @Router /api/v1/order/{title} [get]
+// // @Router /api/v1/order [get]
 // func GetOrder(context *gin.Context) {
 // 	type GetOrderModel struct {
 // 		title string `json:"title"`
@@ -68,7 +66,7 @@ func CreateOrder(context *gin.Context) {
 // 		context.AbortWithStatus(http.StatusNotFound)
 // 	}
 // 	title := context.Params.ByName("title")
-// 	if err := model.GetOrder(&order, title); err != nil {
+// 	if err := model.GetOrderByAccount(&order); err != nil {
 // 		fmt.Println(err.Error())
 // 		context.AbortWithStatus(http.StatusNotFound)
 // 	}

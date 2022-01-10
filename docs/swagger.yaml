@@ -72,6 +72,16 @@ paths:
           schema:
             type: string
       summary: get account record
+  /api/v1/account/{email}/order:
+    get:
+      parameters:
+      - description: email
+        in: path
+        name: email
+        required: true
+        type: string
+      responses: {}
+      summary: get order by account
   /api/v1/book:
     get:
       responses:

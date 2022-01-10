@@ -63,3 +63,32 @@ func GetAccount(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, account)
 }
+
+// @Summary get order by account
+// @Param email path string true "email"
+// @Router /api/v1/account/{email}/order [get]
+func GetOrderByAccount(context *gin.Context) {
+	type GetAccountModel struct {
+		email string `json:"email"`
+	}
+	var getaccountmodel GetAccountModel
+	var account model.Account
+	var order model.Order
+
+	if err := context.ShouldBindUri(getaccountmodel); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+	email := context.Params.ByName("email")
+	if err := model.GetAccount(&account, email); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+
+	if err := model.GetOrderByAccount(&order, &account); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+	context.JSON(http.StatusOK, account)
+
+}

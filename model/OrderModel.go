@@ -42,9 +42,9 @@ func GetAllOrders(order *[]Order) (err error) {
 	return nil
 }
 
-func GetOrder(order *Order, title string) (err error) {
-	fmt.Println("get order by title:%s", title)
-	if err = database.DB.Where("title = ?", title).First(order).Error; err != nil {
+func GetOrderByAccount(order *Order, account *Account) (err error) {
+	fmt.Println("get order by account:%s", account)
+	if err = database.DB.Model(account).Related(order).Error; err != nil {
 		return err
 	}
 	return nil

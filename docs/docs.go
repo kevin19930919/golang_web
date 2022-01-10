@@ -83,6 +83,21 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/account/{email}/order": {
+            "get": {
+                "summary": "get order by account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/book": {
             "get": {
                 "summary": "get all book record",

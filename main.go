@@ -46,7 +46,8 @@ func setupServer() *gin.Engine {
 	{
 		v3.POST("", Controllers.CreateAccount)
 		v3.GET("", Controllers.GetAllAccount)
-		v3.GET("/:title", Controllers.GetAccount)
+		v3.GET("/:email", Controllers.GetAccount)
+		v3.GET("/:email/order", Controllers.GetOrderByAccount)
 	}
 
 	v4 := router.Group("/api/v1/order")
