@@ -2,15 +2,70 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gin Hello</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/signin.css" rel="stylesheet">
 </head>
 
-<body>
-    <h1>Hi IT Home</h1>
+<body class="text-center">
+
+    <main class="form-signin">
+        <form>
+            <img class="mb-4" src="../assets/img/pain.jpeg" alt="" width="250" height="200">
+            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+            <div class="form-floating">
+                <input type="email" class="form-control" id="email" placeholder="name@example.com">
+                <label for="floatingInput">Email</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" placeholder="Password">
+                <label for="floatingPassword">Password</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit" onclick="sign_in()">Sign in</button>
+            <p class="mt-5 mb-3 text-muted">&copy; 2022–2024</p>
+        </form>
+    </main>
+
+
+
 </body>
+<script>
+    function sign_in() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value
+        fetch(`/api/v1/login?email=${email}&password=${password}`).then(function (response) {
+            return response.json()
+        }).then(function (response) {
+            window.location.replace("/books")
+        }).catch(error => alert("wrong email or password"))
+    }
+</script>
 
 </html>

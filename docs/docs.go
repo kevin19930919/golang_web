@@ -122,7 +122,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateBookModel"
+                            "$ref": "#/definitions/model.Book"
                         }
                     }
                 ],
@@ -151,6 +151,38 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "{\"data\":[{title:title,complete:1}]}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/login": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"ok\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -247,6 +279,17 @@ var doc = `{
         }
     },
     "definitions": {
+        "model.Book": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "model.CreateAccountModel": {
             "type": "object",
             "properties": {
@@ -257,14 +300,6 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.CreateBookModel": {
-            "type": "object",
-            "properties": {
-                "title": {
                     "type": "string"
                 }
             }

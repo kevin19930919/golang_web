@@ -30,10 +30,17 @@ func setupServer() *gin.Engine {
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
-	indexRouting := router.Group("/")
+	router.Static("/assets", "./assets")
+	indexRouter := router.Group("/")
 	{
-		indexRouting.GET("", func(c *gin.Context) {
+		indexRouter.GET("", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "index.html", nil)
+		})
+	}
+	BookRouter := router.Group("/books")
+	{
+		BookRouter.GET("", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "books.html", nil)
 		})
 	}
 	v1 := router.Group("/api/v1/todo")
@@ -61,6 +68,11 @@ func setupServer() *gin.Engine {
 	v4 := router.Group("/api/v1/order")
 	{
 		v4.POST("", Controllers.CreateOrder)
+	}
+
+	v5 := router.Group("/api/v1/login")
+	{
+		v5.GET("", Controllers.Login)
 	}
 
 	return router

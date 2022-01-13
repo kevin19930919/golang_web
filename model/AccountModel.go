@@ -47,3 +47,10 @@ func GetAccount(account *Account, email string) (err error) {
 	}
 	return nil
 }
+
+func CheckAccountValid(account *Account, email string, password string) (err error) {
+	if err = database.DB.Where("email = ?", email).Where("password = ?", password).First(account).Error; err != nil {
+		return err
+	}
+	return nil
+}

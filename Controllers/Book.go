@@ -47,7 +47,7 @@ func GetAllBook(context *gin.Context) {
 // @Router /api/v1/book/{title} [get]
 func GetBook(context *gin.Context) {
 	type GetBookModel struct {
-		title string `json:"title"`
+		Title string `json:"title"`
 	}
 	var getbookmodel GetBookModel
 	var book model.Book

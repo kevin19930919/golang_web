@@ -1,4 +1,11 @@
 definitions:
+  model.Book:
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+    type: object
   model.CreateAccountModel:
     properties:
       email:
@@ -6,11 +13,6 @@ definitions:
       name:
         type: string
       password:
-        type: string
-    type: object
-  model.CreateBookModel:
-    properties:
-      title:
         type: string
     type: object
   model.CreateOrder:
@@ -99,7 +101,7 @@ paths:
         name: title
         required: true
         schema:
-          $ref: '#/definitions/model.CreateBookModel'
+          $ref: '#/definitions/model.Book'
       responses:
         "200":
           description: '{"msg":"ok"}'
@@ -120,6 +122,27 @@ paths:
           schema:
             type: string
       summary: get book record
+  /api/v1/login:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: email
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: login
   /api/v1/order:
     post:
       consumes:

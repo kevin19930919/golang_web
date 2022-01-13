@@ -47,7 +47,7 @@ func GetAllAccount(context *gin.Context) {
 // @Router /api/v1/account/{email} [get]
 func GetAccount(context *gin.Context) {
 	type GetAccountModel struct {
-		email string `json:"email"`
+		Email string `json:"email"`
 	}
 	var getaccountmodel GetAccountModel
 	var account model.Account
@@ -69,7 +69,7 @@ func GetAccount(context *gin.Context) {
 // @Router /api/v1/account/{email}/order [get]
 func GetOrderByAccount(context *gin.Context) {
 	type GetAccountModel struct {
-		email string `json:"email"`
+		Email string `json:"email"`
 	}
 	var getaccountmodel GetAccountModel
 	var account model.Account
@@ -91,4 +91,29 @@ func GetOrderByAccount(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, account)
 
+}
+
+// @Summary login
+// @Accept  json
+// @Param  email query string true "email"
+// @Param  password query string true "password"
+// @Success 200 {string} json "{"msg":"ok"}"
+// @Router /api/v1/login [get]
+func Login(context *gin.Context) {
+	type LoginInfo struct {
+		Email    string `form:"email" binding:"required"`
+		Password string `form:"password" binding:"required"`
+	}
+	var logininfo LoginInfo
+	var account model.Account
+
+	if err := context.Bind(&logininfo); err != nil {
+		fmt.Println("check login query fail", err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+	if err := model.CheckAccountValid(&account, logininfo.Email, logininfo.Password); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+	context.JSON(http.StatusOK, account)
 }
