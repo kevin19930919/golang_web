@@ -119,6 +119,20 @@
 
 </body>
 <script>
+    account_email = get_account_email()
+
+    function get_account_email() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'account_email') {
+                return val
+            }
+        }
+
+    };
+
     function fetch_books_info() {
         fetch(`/api/v1/book`).then(function (response) {
             return response.json()
@@ -153,6 +167,7 @@
         var button_div = document.createElement("button")
         button_div.className = "btn btn-sm btn-outline-secondary"
         button_div.innerHTML = "Order"
+        button_div.onclick = function () { place_order(book_info['ID']) };
 
         book_card = append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div)
         return book_card
@@ -177,6 +192,19 @@
             card_container.appendChild(book_card)
         }
     }
+
+    function place_order(book_id) {
+        fetch(`/api/v1/order`, {
+            method: 'POST',
+            body: JSON.stringify({ book_title: book_id, account_email: account_email })
+        }).then(function (response) {
+            return response.json()
+        }).then(function (result) {
+            alert('place order success')
+        })
+
+    }
+
     fetch_books_info()
 </script>
 

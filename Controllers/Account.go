@@ -115,5 +115,6 @@ func Login(context *gin.Context) {
 		fmt.Println(err.Error())
 		context.AbortWithStatus(http.StatusNotFound)
 	}
+	context.SetCookie("account_email", logininfo.Email, 3600, "/", "", false, false)
 	context.JSON(http.StatusOK, account)
 }

@@ -12,16 +12,15 @@ type (
 		CreateTime   time.Time `json:"create_time"`
 		RemainTime   float64   `json:"remain_time"`
 		AccountEmail string
-		BookID       string
+		BookID       string  `gorm:"unique;not null"`
 		Account      Account `gorm:"foreignkey:AccountEmail;references:AccountEmail"`
 		Book         Book    `gorm:"foreignkey:BookID;references:BookID"`
 	}
 
 	CreateOrder struct {
-		CreateTime   time.Time `json:"create_time"`
-		RemainTime   float64   `json:"remain_time"`
-		BookTitle    string    `json:"book_title"`
-		AccountEmail string    `json:"account_email"`
+		RemainTime   float64 `json:"remain_time"`
+		BookTitle    string  `json:"book_title"`
+		AccountEmail string  `json:"account_email"`
 	}
 )
 
@@ -29,6 +28,7 @@ type (
 func CreatetOrder(order *Order, book *Book, account *Account) (err error) {
 	order.Account = *account
 	order.Book = *book
+	order.CreateTime = time.Now()
 	if err = database.DB.Create(order).Error; err != nil {
 		return err
 	}
