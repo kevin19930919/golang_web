@@ -53,7 +53,7 @@ func setupServer() *gin.Engine {
 	v2 := router.Group("/api/v1/book")
 	{
 		v2.POST("", Controllers.CreateBook)
-		v2.GET("", Controllers.GetAllBook)
+		v2.GET("", Controllers.GetAllBooks)
 		v2.GET("/:title", Controllers.GetBook)
 	}
 

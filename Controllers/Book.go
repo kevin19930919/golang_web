@@ -28,9 +28,9 @@ func CreateBook(context *gin.Context) {
 }
 
 // @Summary get all book record
-// @Success 200 {string} json "{"data":[{title:title1,complete:1},{title:title2,complete:0}]}"
+// @Success 200 {string} json "{"data":[{title:title1,id:0},{title:title2,id:1}]}"
 // @Router /api/v1/book [get]
-func GetAllBook(context *gin.Context) {
+func GetAllBooks(context *gin.Context) {
 	var book []model.Book
 	err := model.GetAllBooks(&book)
 	if err != nil {

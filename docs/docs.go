@@ -103,7 +103,7 @@ var doc = `{
                 "summary": "get all book record",
                 "responses": {
                     "200": {
-                        "description": "{\"data\":[{title:title1,complete:1},{title:title2,complete:0}]}",
+                        "description": "{\"data\":[{title:title1,id:0},{title:title2,id:1}]}",
                         "schema": {
                             "type": "string"
                         }
@@ -282,6 +282,9 @@ var doc = `{
         "model.Book": {
             "type": "object",
             "properties": {
+                "desc": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },

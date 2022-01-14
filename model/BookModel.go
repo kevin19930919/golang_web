@@ -10,6 +10,7 @@ type (
 	Book struct {
 		ID    string `gorm:"primaryKey;"`
 		Title string `json:"title"`
+		Desc  string `jsno:"desc"`
 	}
 
 	GetBookModel struct {
