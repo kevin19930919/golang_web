@@ -72,7 +72,7 @@ func setupServer() *gin.Engine {
 
 	v5 := router.Group("/api/v1/login")
 	{
-		v5.GET("", Controllers.Login)
+		v5.POST("", Controllers.Login)
 	}
 
 	return router

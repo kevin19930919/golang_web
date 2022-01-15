@@ -60,7 +60,11 @@
     function sign_in() {
         var email = document.getElementById("email").value;
         var password = document.getElementById("password").value
-        fetch(`/api/v1/login?email=${email}&password=${password}`).then(function (response) {
+        fetch(`/api/v1/login`, {
+            method: 'POST',
+            header: "Content-Type: application/json",
+            body: JSON.stringify({ email: email, password: password })
+        }).then(function (response) {
             return response.json()
         }).then(function (response) {
             window.location.replace("/books")

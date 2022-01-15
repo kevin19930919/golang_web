@@ -21,9 +21,7 @@ definitions:
     properties:
       account_email:
         type: string
-      book_title:
-        type: string
-      create_time:
+      book_id:
         type: string
       remain_time:
         type: number
@@ -110,12 +108,12 @@ paths:
           schema:
             type: string
       summary: add book record
-  /api/v1/book/{title}:
+  /api/v1/book/{id}:
     get:
       parameters:
-      - description: title
+      - description: id
         in: path
-        name: title
+        name: id
         required: true
         type: string
       responses:

@@ -24,9 +24,10 @@ func CreateOrder(context *gin.Context) {
 
 	json := make(map[string]string)
 	context.ShouldBindBodyWith(&json, binding.JSON)
-	title := json["book_title"]
+	id := json["book_id"]
 	email := json["account_email"]
-	model.GetBook(&book, title)
+	fmt.Println(email)
+	model.GetBook(&book, id)
 	model.GetAccount(&account, email)
 	if err := model.CreatetOrder(&order, &book, &account); err != nil {
 		fmt.Println(err.Error())

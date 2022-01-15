@@ -3,6 +3,7 @@ package Controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"golang_web/model"
 	"net/http"
 )
@@ -95,19 +96,15 @@ func GetOrderByAccount(context *gin.Context) {
 
 // @Summary login
 // @Accept  json
-// @Param  email query string true "email"
-// @Param  password query string true "password"
+// @Param title body model.Login true "login"
 // @Success 200 {string} json "{"msg":"ok"}"
-// @Router /api/v1/login [get]
+// @Router /api/v1/login [post]
 func Login(context *gin.Context) {
-	type LoginInfo struct {
-		Email    string `form:"email" binding:"required"`
-		Password string `form:"password" binding:"required"`
-	}
-	var logininfo LoginInfo
+
+	var logininfo model.LoginInfo
 	var account model.Account
 
-	if err := context.Bind(&logininfo); err != nil {
+	if err := context.ShouldBindBodyWith(&logininfo, binding.JSON); err != nil {
 		fmt.Println("check login query fail", err.Error())
 		context.AbortWithStatus(http.StatusNotFound)
 	}

@@ -196,7 +196,8 @@
     function place_order(book_id) {
         fetch(`/api/v1/order`, {
             method: 'POST',
-            body: JSON.stringify({ book_title: book_id, account_email: account_email })
+            header: "Content-Type: application/json",
+            body: JSON.stringify({ book_id: book_id, account_email: account_email, remain_time: 7 * 24 * 60 * 60 })
         }).then(function (response) {
             return response.json()
         }).then(function (result) {

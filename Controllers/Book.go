@@ -42,12 +42,12 @@ func GetAllBooks(context *gin.Context) {
 }
 
 // @Summary get book record
-// @Param title path string true "title"
+// @Param id path string true "id"
 // @Success 200 {string} json "{"data":[{title:title,complete:1}]}"
-// @Router /api/v1/book/{title} [get]
+// @Router /api/v1/book/{id} [get]
 func GetBook(context *gin.Context) {
 	type GetBookModel struct {
-		Title string `json:"title"`
+		ID string `json:"id"`
 	}
 	var getbookmodel GetBookModel
 	var book model.Book
@@ -56,8 +56,8 @@ func GetBook(context *gin.Context) {
 		fmt.Println(err.Error())
 		context.AbortWithStatus(http.StatusNotFound)
 	}
-	title := context.Params.ByName("title")
-	if err := model.GetBook(&book, title); err != nil {
+	id := context.Params.ByName("id")
+	if err := model.GetBook(&book, id); err != nil {
 		fmt.Println(err.Error())
 		context.AbortWithStatus(http.StatusNotFound)
 	}

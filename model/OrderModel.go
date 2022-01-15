@@ -9,8 +9,8 @@ import (
 type (
 	Order struct {
 		ID           uint      `gorm:"primaryKey;autoIncrement:true;"`
-		CreateTime   time.Time `json:"create_time"`
-		RemainTime   float64   `json:"remain_time"`
+		CreateTime   time.Time `json:"create_time" gorm:"unique;not null"`
+		RemainTime   float64   `json:"remain_time" gorm:"unique;not null"`
 		AccountEmail string
 		BookID       string  `gorm:"unique;not null"`
 		Account      Account `gorm:"foreignkey:AccountEmail;references:AccountEmail"`
@@ -19,7 +19,7 @@ type (
 
 	CreateOrder struct {
 		RemainTime   float64 `json:"remain_time"`
-		BookTitle    string  `json:"book_title"`
+		BookID       string  `json:"book_id"`
 		AccountEmail string  `json:"account_email"`
 	}
 )

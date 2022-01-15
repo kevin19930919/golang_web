@@ -136,14 +136,14 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/book/{title}": {
+        "/api/v1/book/{id}": {
             "get": {
                 "summary": "get book record",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "title",
-                        "name": "title",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -313,10 +313,7 @@ var doc = `{
                 "account_email": {
                     "type": "string"
                 },
-                "book_title": {
-                    "type": "string"
-                },
-                "create_time": {
+                "book_id": {
                     "type": "string"
                 },
                 "remain_time": {

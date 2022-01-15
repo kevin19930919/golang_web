@@ -34,9 +34,9 @@ func GetAllBooks(book *[]Book) (err error) {
 	return nil
 }
 
-func GetBook(book *Book, title string) (err error) {
-	fmt.Println("get book by title:%s", title)
-	if err = database.DB.Where("title = ?", title).First(book).Error; err != nil {
+func GetBook(book *Book, id string) (err error) {
+	fmt.Println("get book by id:%s", id)
+	if err = database.DB.Where("id = ?", id).First(book).Error; err != nil {
 		return err
 	}
 	return nil

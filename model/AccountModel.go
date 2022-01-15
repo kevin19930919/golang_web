@@ -9,8 +9,8 @@ type (
 	Account struct {
 		ID       uint   `gorm:"primaryKey;autoIncrement:true;"`
 		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Email    string `json:"email" gorm:"unique;not null`
+		Password string `json:"password" gorm:"unique;not null`
 	}
 
 	GetAccountModel struct {
@@ -19,6 +19,11 @@ type (
 
 	CreateAccountModel struct {
 		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	LoginInfo struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
