@@ -133,9 +133,21 @@
 
     };
 
+    function get_jwt_token() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'token') {
+                return val
+            }
+        }
+
+    };
+
     function fetch_books_info() {
         fetch(`/api/v1/book`, {
-            headers: { 'Authorization': 'test' }
+            headers: { 'Authorization': `Bearer ${get_jwt_token()}` }
         }).then(function (response) {
             return response.json()
         }).then(function (result) {
@@ -208,7 +220,7 @@
 
     }
 
-    // fetch_books_info()
+    fetch_books_info()
 </script>
 
 </html>

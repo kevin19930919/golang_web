@@ -65,12 +65,7 @@
         }).then(function (response) {
             return response.json()
         }).then(function (response) {
-            return fetch('/books', {
-                headers: { 'Authorization': response['data']['token'] }
-            }).then(function (html) {
-                var parser = new DOMParser();
-                var doc = parser.parseFromString(html, 'text/html');
-            })
+            window.location = '/books'
         }).catch(error => alert("wrong email or password"))
     }
 </script>

@@ -113,8 +113,10 @@ func Login(context *gin.Context) {
 		fmt.Println(err.Error())
 		context.AbortWithStatus(http.StatusNotFound)
 	}
-	context.SetCookie("account_email", logininfo.Email, 3600, "/", "", false, false)
+
 	JwtToken, _ := jwt_pkg.GenToken(logininfo.Email, logininfo.Password)
+	context.SetCookie("account_email", logininfo.Email, 3600, "/", "", false, false)
+	context.SetCookie("token", JwtToken, 3600, "/", "", false, false)
 	context.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  "success",
