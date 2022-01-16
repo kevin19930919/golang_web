@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"golang_web/model"
+	"golang_web/pkg"
 	"net/http"
 )
 
@@ -113,5 +114,10 @@ func Login(context *gin.Context) {
 		context.AbortWithStatus(http.StatusNotFound)
 	}
 	context.SetCookie("account_email", logininfo.Email, 3600, "/", "", false, false)
-	context.JSON(http.StatusOK, account)
+	JwtToken, _ := jwt_pkg.GenToken(logininfo.Email, logininfo.Password)
+	context.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "success",
+		"data": gin.H{"token": JwtToken},
+	})
 }

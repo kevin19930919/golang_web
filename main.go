@@ -7,6 +7,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang_web/Controllers"
 	"golang_web/config"
+	"golang_web/middleware"
 	"golang_web/model"
 	"net/http"
 )
@@ -45,29 +46,29 @@ func setupServer() *gin.Engine {
 	}
 	v1 := router.Group("/api/v1/todo")
 	{
-		v1.POST("", Controllers.CreateTodo)
-		v1.GET("", Controllers.GetAllTodo)
-		v1.GET("/:title", Controllers.GetTodo)
+		v1.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateTodo)
+		v1.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllTodo)
+		v1.GET("/:title", middleware.JWTAuthMiddleware(), Controllers.GetTodo)
 	}
 
 	v2 := router.Group("/api/v1/book")
 	{
-		v2.POST("", Controllers.CreateBook)
-		v2.GET("", Controllers.GetAllBooks)
-		v2.GET("/:title", Controllers.GetBook)
+		v2.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateBook)
+		v2.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllBooks)
+		v2.GET("/:title", middleware.JWTAuthMiddleware(), Controllers.GetBook)
 	}
 
 	v3 := router.Group("/api/v1/account")
 	{
-		v3.POST("", Controllers.CreateAccount)
-		v3.GET("", Controllers.GetAllAccount)
-		v3.GET("/:email", Controllers.GetAccount)
-		v3.GET("/:email/order", Controllers.GetOrderByAccount)
+		v3.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateAccount)
+		v3.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllAccount)
+		v3.GET("/:email", middleware.JWTAuthMiddleware(), Controllers.GetAccount)
+		v3.GET("/:email/order", middleware.JWTAuthMiddleware(), Controllers.GetOrderByAccount)
 	}
 
 	v4 := router.Group("/api/v1/order")
 	{
-		v4.POST("", Controllers.CreateOrder)
+		v4.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateOrder)
 	}
 
 	v5 := router.Group("/api/v1/login")

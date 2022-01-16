@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"golang_web/model"
 	"net/http"
+	"net/url"
 )
 
 // @Summary add order record
@@ -25,8 +26,9 @@ func CreateOrder(context *gin.Context) {
 	json := make(map[string]string)
 	context.ShouldBindBodyWith(&json, binding.JSON)
 	id := json["book_id"]
-	email := json["account_email"]
-	fmt.Println(email)
+	// decode url because email format got @
+	email, _ := url.QueryUnescape(json["account_email"])
+
 	model.GetBook(&book, id)
 	model.GetAccount(&account, email)
 	if err := model.CreatetOrder(&order, &book, &account); err != nil {

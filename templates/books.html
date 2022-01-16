@@ -134,7 +134,9 @@
     };
 
     function fetch_books_info() {
-        fetch(`/api/v1/book`).then(function (response) {
+        fetch(`/api/v1/book`, {
+            headers: { 'Authorization': 'test' }
+        }).then(function (response) {
             return response.json()
         }).then(function (result) {
             construct_book_card(result)
@@ -196,7 +198,7 @@
     function place_order(book_id) {
         fetch(`/api/v1/order`, {
             method: 'POST',
-            header: "Content-Type: application/json",
+            header: { "Content-Type": "application/json" },
             body: JSON.stringify({ book_id: book_id, account_email: account_email, remain_time: 7 * 24 * 60 * 60 })
         }).then(function (response) {
             return response.json()
@@ -206,7 +208,7 @@
 
     }
 
-    fetch_books_info()
+    // fetch_books_info()
 </script>
 
 </html>

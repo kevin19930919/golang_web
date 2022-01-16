@@ -9,8 +9,8 @@ import (
 type (
 	Order struct {
 		ID           uint      `gorm:"primaryKey;autoIncrement:true;"`
-		CreateTime   time.Time `json:"create_time" gorm:"unique;not null"`
-		RemainTime   float64   `json:"remain_time" gorm:"unique;not null"`
+		CreateTime   time.Time `json:"create_time" gorm:"not null"`
+		RemainTime   float64   `json:"remain_time" gorm:"not null"`
 		AccountEmail string
 		BookID       string  `gorm:"unique;not null"`
 		Account      Account `gorm:"foreignkey:AccountEmail;references:AccountEmail"`
