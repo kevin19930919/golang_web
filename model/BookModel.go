@@ -3,14 +3,14 @@ package model
 import (
 	"fmt"
 	"golang_web/config"
-	"time"
 )
 
 type (
 	Book struct {
-		ID    string `gorm:"primaryKey;"`
-		Title string `json:"title"`
-		Desc  string `jsno:"desc"`
+		ID     string `gorm:"primaryKey;"`
+		Title  string `json:"title"`
+		Desc   string `jsno:"desc"`
+		Status int32  `json:"status" gorm:"default:0"`
 	}
 
 	GetBookModel struct {
@@ -42,7 +42,13 @@ func GetBook(book *Book, id string) (err error) {
 	return nil
 }
 
-func CreateBookID(title string) string {
-	t := time.Now()
-	return title + t.String()
+func UpdateBookStatus(book *Book, status int32) (err error) {
+	// status:
+	//    0:avaliable
+	//    1:ordered
+	//    2:preserved
+	if err = database.DB.Model(book).Update("status", status).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -39,39 +39,35 @@ func CreateOrder(context *gin.Context) {
 	context.JSON(http.StatusOK, order)
 }
 
-// // @Summary get all order record
-// // @Success 200 {string} json "{"data":[{title:title1,complete:1},{title:title2,complete:0}]}"
-// // @Router /api/v1/order [get]
-// func GetAllorder(context *gin.Context) {
-// 	var order []model.Order
-// 	err := model.GetAllOrders(&order)
-// 	if err != nil {
-// 		fmt.Println(err.Error())
-// 		context.AbortWithStatus(http.StatusNotFound)
-// 	} else {
-// 		context.JSON(http.StatusOK, order)
-// 	}
-// }
+// @Summary add order record
+// @Accept  json
+// @Param id path string true "id"
+// @Success 200 {string} json "{"msg":"ok"}"
+// @Router /api/v1/order/{id} [patch]
+func UpdateOrder(context *gin.Context) {
+	type UpdateOrderInfo struct {
+		ID            int32 `json:"id"`
+		OrderReturned bool  `form:"order_returned"`
+		BookStatus    int32 `form:"book_status"`
+	}
+	var updateinfo UpdateOrderInfo
+	var order model.Order
 
-// // @Summary get order record by account
-// // @Param title path string true "title"
-// // @Success 200 {string} json "{"data":[{title:title,complete:1}]}"
-// // @Router /api/v1/order [get]
-// func GetOrder(context *gin.Context) {
-// 	type GetOrderModel struct {
-// 		title string `json:"title"`
-// 	}
-// 	var getordermodel GetOrderModel
-// 	var order model.Order
+	if err := context.ShouldBind(&updateinfo); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
 
-// 	if err := context.ShouldBindUri(getordermodel); err != nil {
-// 		fmt.Println(err.Error())
-// 		context.AbortWithStatus(http.StatusNotFound)
-// 	}
-// 	title := context.Params.ByName("title")
-// 	if err := model.GetOrderByAccount(&order); err != nil {
-// 		fmt.Println(err.Error())
-// 		context.AbortWithStatus(http.StatusNotFound)
-// 	}
-// 	context.JSON(http.StatusOK, order)
-// }
+	if err := model.GetOrderByID(&order, updateinfo.ID); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+
+	if err := model.UpdateOderStatus(&order, updateinfo.OrderReturned, updateinfo.BookStatus); err != nil {
+		fmt.Println(err.Error())
+		context.AbortWithStatus(http.StatusNotFound)
+	}
+
+	fmt.Println("success update order")
+	context.JSON(http.StatusOK, order)
+}

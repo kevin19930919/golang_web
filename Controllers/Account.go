@@ -97,7 +97,7 @@ func GetOrderByAccount(context *gin.Context) {
 
 // @Summary login
 // @Accept  json
-// @Param title body model.Login true "login"
+// @Param title body model.LoginInfo true "login"
 // @Success 200 {string} json "{"msg":"ok"}"
 // @Router /api/v1/login [post]
 func Login(context *gin.Context) {

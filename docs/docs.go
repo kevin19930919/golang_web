@@ -159,25 +159,20 @@ var doc = `{
             }
         },
         "/api/v1/login": {
-            "get": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
                 "summary": "login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "email",
-                        "name": "email",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "password",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
+                        "description": "login",
+                        "name": "title",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginInfo"
+                        }
                     }
                 ],
                 "responses": {
@@ -205,6 +200,31 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/model.CreateOrder"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/order/{id}": {
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "add order record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -288,6 +308,9 @@ var doc = `{
                 "id": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "integer"
+                },
                 "title": {
                     "type": "string"
                 }
@@ -328,6 +351,17 @@ var doc = `{
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.LoginInfo": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }
