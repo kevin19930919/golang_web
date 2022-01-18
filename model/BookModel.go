@@ -7,10 +7,17 @@ import (
 
 type (
 	Book struct {
-		ID     string `gorm:"primaryKey;"`
-		Title  string `json:"title"`
-		Desc   string `jsno:"desc"`
-		Status int32  `json:"status" gorm:"default:0"`
+		ID     string   `gorm:"primaryKey;"`
+		Title  string   `json:"title"`
+		Desc   string   `jsno:"desc"`
+		Status int32    `json:"status" gorm:"default:0"`
+		Orders []*Order `gorm:"many2many:order_book;"`
+	}
+
+	CreateBookModel struct {
+		ID    string `json:"id"`
+		Title string `json:"title"`
+		Desc  string `jsno:"desc"`
 	}
 
 	GetBookModel struct {
@@ -21,7 +28,7 @@ type (
 //CreateBook ... Insert New data
 func CreatetBook(book *Book) (err error) {
 	fmt.Println("create book:%s", book)
-	if err = database.DB.Create(book).Error; err != nil {
+	if err = database.DB.Omit("Orders").Create(book).Error; err != nil {
 		return err
 	}
 	return nil

@@ -1,15 +1,4 @@
 definitions:
-  model.Book:
-    properties:
-      desc:
-        type: string
-      id:
-        type: string
-      status:
-        type: integer
-      title:
-        type: string
-    type: object
   model.CreateAccountModel:
     properties:
       email:
@@ -17,6 +6,15 @@ definitions:
       name:
         type: string
       password:
+        type: string
+    type: object
+  model.CreateBookModel:
+    properties:
+      desc:
+        type: string
+      id:
+        type: string
+      title:
         type: string
     type: object
   model.CreateOrder:
@@ -110,7 +108,7 @@ paths:
         name: title
         required: true
         schema:
-          $ref: '#/definitions/model.Book'
+          $ref: '#/definitions/model.CreateBookModel'
       responses:
         "200":
           description: '{"msg":"ok"}'

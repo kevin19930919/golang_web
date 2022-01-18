@@ -14,9 +14,8 @@ type (
 		RemainTime   float64   `json:"remain_time" gorm:"not null"`
 		Returned     bool      `json:"returned" gorm:"not null;default:false"`
 		AccountEmail string
-		BookID       string  `gorm:"unique;not null"`
 		Account      Account `gorm:"foreignkey:AccountEmail;references:AccountEmail"`
-		Book         Book    `gorm:"foreignkey:BookID;references:BookID"`
+		Books        []*Book `gorm:"many2many:order_book;"`
 	}
 
 	CreateOrder struct {
@@ -26,10 +25,10 @@ type (
 	}
 )
 
-//CreateBook ... Insert New data
+//CreateOrder ... Insert New data
 func CreatetOrder(order *Order, book *Book, account *Account) (err error) {
 	order.Account = *account
-	order.Book = *book
+	order.Books = append(order.Books, book)
 	order.CreateTime = time.Now()
 
 	return database.DB.Transaction(func(tx *gorm.DB) error {
@@ -71,7 +70,7 @@ func GetOrderByID(order *Order, id int32) (err error) {
 func UpdateOderStatus(order *Order, returned bool, book_status int32) (err error) {
 	return database.DB.Transaction(func(tx *gorm.DB) error {
 		// preload book table
-		if err := tx.Preload("Book").Find(order).Error; err != nil {
+		if err := tx.Preload("Books").Find(order).Error; err != nil {
 			return err
 		}
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
@@ -79,7 +78,7 @@ func UpdateOderStatus(order *Order, returned bool, book_status int32) (err error
 			return err
 		}
 
-		if err := tx.Model(order.Book).Update("status", book_status).Error; err != nil {
+		if err := tx.Model(order.Books).Update("status", book_status).Error; err != nil {
 			return err
 		}
 		// return nil will commit the whole transaction
