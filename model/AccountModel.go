@@ -48,6 +48,7 @@ func GetAllAccounts(account *[]Account) (err error) {
 func GetAccount(account *Account, email string) (err error) {
 	fmt.Println("get account by email:%s", email)
 	if err = database.DB.Where("email = ?", email).First(account).Error; err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil

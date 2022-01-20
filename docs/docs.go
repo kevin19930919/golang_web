@@ -158,6 +158,58 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/booklist": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "create booklist record",
+                "parameters": [
+                    {
+                        "description": "booklist",
+                        "name": "title",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateBooklistInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/booklist/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "delete booklist record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "title",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "consumes": [
@@ -198,7 +250,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateOrder"
+                            "$ref": "#/definitions/model.CreateOrderInfo"
                         }
                     }
                 ],
@@ -327,14 +379,31 @@ var doc = `{
                 }
             }
         },
-        "model.CreateOrder": {
+        "model.CreateBooklistInfo": {
             "type": "object",
             "properties": {
                 "account_email": {
                     "type": "string"
                 },
-                "book_id": {
+                "book_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.CreateOrderInfo": {
+            "type": "object",
+            "properties": {
+                "account_email": {
                     "type": "string"
+                },
+                "book_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "remain_time": {
                     "type": "number"

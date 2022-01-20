@@ -7,11 +7,12 @@ import (
 
 type (
 	Book struct {
-		ID     string   `gorm:"primaryKey;"`
-		Title  string   `json:"title"`
-		Desc   string   `jsno:"desc"`
-		Status int32    `json:"status" gorm:"default:0"`
-		Orders []*Order `gorm:"many2many:order_book;"`
+		ID        string      `gorm:"primaryKey;"`
+		Title     string      `json:"title"`
+		Desc      string      `jsno:"desc"`
+		Status    int32       `json:"status" gorm:"default:0"`
+		Orders    []*Order    `gorm:"many2many:order_book;"`
+		Booklists []*Booklist `gorm:"many2many:booklsit_book;"`
 	}
 
 	CreateBookModel struct {

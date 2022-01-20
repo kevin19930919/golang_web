@@ -9,16 +9,16 @@ import (
 	"net/url"
 )
 
-// @Summary add order record
+// @Summary create booklist record
 // @Accept  json
-// @Param title body model.CreateOrderInfo true "order"
+// @Param title body model.CreateBooklistInfo true "booklist"
 // @Success 200 {string} json "{"msg":"ok"}"
-// @Router /api/v1/order [post]
-func CreateOrder(context *gin.Context) {
-	var order model.Order
-	var orderinfo model.CreateOrderInfo
+// @Router /api/v1/booklist [post]
+func CreateBooklist(context *gin.Context) {
+	var booklist model.Booklist
+	var booklistinfo model.CreateBooklistInfo
 	var account model.Account
-	if err := context.ShouldBindBodyWith(&order, binding.JSON); err != nil {
+	if err := context.ShouldBindBodyWith(&booklist, binding.JSON); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -26,12 +26,12 @@ func CreateOrder(context *gin.Context) {
 		return
 	}
 
-	context.ShouldBindBodyWith(&orderinfo, binding.JSON)
-	ids := orderinfo.BookIDs
+	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
+	ids := booklistinfo.BookIDs
 
 	// ======= get account record =======
 	// decode url because email format got @
-	email, _ := url.QueryUnescape(orderinfo.AccountEmail)
+	email, _ := url.QueryUnescape(booklistinfo.AccountEmail)
 	if err := model.GetAccount(&account, email); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
@@ -53,7 +53,7 @@ func CreateOrder(context *gin.Context) {
 		books = append(books, &book)
 		// ======create order ============
 	}
-	if err := model.CreateOrder(&order, books, &account); err != nil {
+	if err := model.CreateBooklist(&booklist, books, &account); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -61,25 +61,18 @@ func CreateOrder(context *gin.Context) {
 		return
 	}
 
-	fmt.Println("success create order record")
-	context.JSON(http.StatusOK, order)
+	fmt.Println("success create booklist record")
+	context.JSON(http.StatusOK, booklist)
 }
 
-// @Summary add order record
-// @Accept  json
-// @Param id path string true "id"
+// @Summary delete booklist record
+// @Param title path string true "id"
 // @Success 200 {string} json "{"msg":"ok"}"
-// @Router /api/v1/order/{id} [patch]
-func UpdateOrder(context *gin.Context) {
-	type UpdateOrderInfo struct {
-		ID            int32 `json:"id"`
-		OrderReturned bool  `form:"order_returned"`
-		BookStatus    int32 `form:"book_status"`
-	}
-	var updateinfo UpdateOrderInfo
-	var order model.Order
-
-	if err := context.ShouldBind(&updateinfo); err != nil {
+// @Router /api/v1/booklist/{id} [delete]
+func DeleteBooklist(context *gin.Context) {
+	var booklistinfo model.DeleteBooklistInfo
+	var booklist model.Booklist
+	if err := context.ShouldBindUri(&booklistinfo); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -87,7 +80,7 @@ func UpdateOrder(context *gin.Context) {
 		return
 	}
 
-	if err := model.GetOrderByID(&order, updateinfo.ID); err != nil {
+	if err := model.GetBooklist(&booklist, booklistinfo.ID); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -95,7 +88,7 @@ func UpdateOrder(context *gin.Context) {
 		return
 	}
 
-	if err := model.UpdateOderStatusBookReturned(&order, updateinfo.OrderReturned, updateinfo.BookStatus); err != nil {
+	if err := model.DeleteBooklist(&booklist); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -103,6 +96,7 @@ func UpdateOrder(context *gin.Context) {
 		return
 	}
 
-	fmt.Println("success update order")
-	context.JSON(http.StatusOK, order)
+	fmt.Println("success create booklist record")
+	context.JSON(http.StatusOK, booklist)
+
 }

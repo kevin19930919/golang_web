@@ -17,12 +17,18 @@ func CreateBook(context *gin.Context) {
 	var book model.Book
 	if err := context.BindJSON(&book); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
 	if err := model.CreatetBook(&book); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	fmt.Println("success create book record")
 	context.JSON(http.StatusOK, book)
@@ -36,7 +42,10 @@ func GetAllBooks(context *gin.Context) {
 	err := model.GetAllBooks(&book)
 	if err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	} else {
 		context.JSON(http.StatusOK, book)
 	}
@@ -55,12 +64,18 @@ func GetBook(context *gin.Context) {
 
 	if err := context.ShouldBindUri(getbookmodel); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	id := context.Params.ByName("id")
 	if err := model.GetBook(&book, id); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	context.JSON(http.StatusOK, book)
 }

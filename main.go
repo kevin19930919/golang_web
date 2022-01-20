@@ -44,36 +44,37 @@ func setupServer() *gin.Engine {
 			c.HTML(http.StatusOK, "books.html", nil)
 		})
 	}
-	v1 := router.Group("/api/v1/todo")
+
+	BookAPI := router.Group("/api/v1/book")
 	{
-		v1.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateTodo)
-		v1.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllTodo)
-		v1.GET("/:title", middleware.JWTAuthMiddleware(), Controllers.GetTodo)
+		BookAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateBook)
+		BookAPI.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllBooks)
+		BookAPI.GET("/:id", middleware.JWTAuthMiddleware(), Controllers.GetBook)
 	}
 
-	v2 := router.Group("/api/v1/book")
+	AccountAPI := router.Group("/api/v1/account")
 	{
-		v2.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateBook)
-		v2.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllBooks)
-		v2.GET("/:title", middleware.JWTAuthMiddleware(), Controllers.GetBook)
+		AccountAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateAccount)
+		AccountAPI.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllAccount)
+		AccountAPI.GET("/:email", middleware.JWTAuthMiddleware(), Controllers.GetAccount)
+		AccountAPI.GET("/:email/order", middleware.JWTAuthMiddleware(), Controllers.GetOrderByAccount)
 	}
 
-	v3 := router.Group("/api/v1/account")
+	OrderAPI := router.Group("/api/v1/order")
 	{
-		v3.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateAccount)
-		v3.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllAccount)
-		v3.GET("/:email", middleware.JWTAuthMiddleware(), Controllers.GetAccount)
-		v3.GET("/:email/order", middleware.JWTAuthMiddleware(), Controllers.GetOrderByAccount)
+		OrderAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateOrder)
+		OrderAPI.PATCH("/:id", middleware.JWTAuthMiddleware(), Controllers.UpdateOrder)
 	}
 
-	v4 := router.Group("/api/v1/order")
+	BookListAPI := router.Group("/api/v1/booklist")
 	{
-		v4.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateOrder)
+		BookListAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateBooklist)
+		BookListAPI.DELETE("/:id", middleware.JWTAuthMiddleware(), Controllers.DeleteBooklist)
 	}
 
-	v5 := router.Group("/api/v1/login")
+	LoginAPI := router.Group("/api/v1/login")
 	{
-		v5.POST("", Controllers.Login)
+		LoginAPI.POST("", Controllers.Login)
 	}
 
 	return router

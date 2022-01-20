@@ -13,30 +13,37 @@ type (
 		CreateTime   time.Time `json:"create_time" gorm:"not null"`
 		RemainTime   float64   `json:"remain_time" gorm:"not null"`
 		Returned     bool      `json:"returned" gorm:"not null;default:false"`
-		AccountEmail string
-		Account      Account `gorm:"foreignkey:AccountEmail;references:AccountEmail"`
-		Books        []*Book `gorm:"many2many:order_book;"`
+		AccountEmail string    `gorm:"not null"`
+		Account      Account   `gorm:"foreignkey:AccountEmail;references:AccountEmail"`
+		Books        []*Book   `gorm:"many2many:order_book;"`
 	}
 
-	CreateOrder struct {
-		RemainTime   float64 `json:"remain_time"`
-		BookID       string  `json:"book_id"`
-		AccountEmail string  `json:"account_email"`
+	CreateOrderInfo struct {
+		RemainTime   float64  `json:"remain_time"`
+		BookIDs      []string `json:"book_ids"`
+		AccountEmail string   `json:"account_email"`
 	}
 )
 
 //CreateOrder ... Insert New data
-func CreatetOrder(order *Order, book *Book, account *Account) (err error) {
+func CreateOrder(order *Order, books []*Book, account *Account) (err error) {
 	order.Account = *account
-	order.Books = append(order.Books, book)
-	order.CreateTime = time.Now()
+	// check book is not ordered
+	order.Books = books
+
+	local, _ := time.LoadLocation("Local")
+	order.CreateTime = time.Now().In(local)
 
 	return database.DB.Transaction(func(tx *gorm.DB) error {
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Preload("Books").Find(order).Error; err != nil {
+			return err
+		}
+
 		if err := tx.Create(order).Error; err != nil {
 			return err
 		}
-		if err := tx.Model(book).Update("status", 1).Error; err != nil {
+		if err := tx.Model(order.Books).Update("status", 1).Error; err != nil {
 			return err
 		}
 		// return nil will commit the whole transaction
@@ -67,7 +74,7 @@ func GetOrderByID(order *Order, id int32) (err error) {
 	return nil
 }
 
-func UpdateOderStatus(order *Order, returned bool, book_status int32) (err error) {
+func UpdateOderStatusBookReturned(order *Order, returned bool, book_status int32) (err error) {
 	return database.DB.Transaction(func(tx *gorm.DB) error {
 		// preload book table
 		if err := tx.Preload("Books").Find(order).Error; err != nil {

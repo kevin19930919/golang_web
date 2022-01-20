@@ -18,12 +18,18 @@ func CreateAccount(context *gin.Context) {
 	var account model.Account
 	if err := context.BindJSON(&account); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
 	if err := model.CreatetAccount(&account); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	fmt.Println("success create account record")
 	context.JSON(http.StatusOK, account)
@@ -37,7 +43,11 @@ func GetAllAccount(context *gin.Context) {
 	err := model.GetAllAccounts(&account)
 	if err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		// context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	} else {
 		context.JSON(http.StatusOK, account)
 	}
@@ -49,19 +59,25 @@ func GetAllAccount(context *gin.Context) {
 // @Router /api/v1/account/{email} [get]
 func GetAccount(context *gin.Context) {
 	type GetAccountModel struct {
-		Email string `json:"email"`
+		Email string `uri:"email"`
 	}
 	var getaccountmodel GetAccountModel
 	var account model.Account
 
 	if err := context.ShouldBindUri(getaccountmodel); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	email := context.Params.ByName("email")
 	if err := model.GetAccount(&account, email); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	context.JSON(http.StatusOK, account)
 }
@@ -71,25 +87,34 @@ func GetAccount(context *gin.Context) {
 // @Router /api/v1/account/{email}/order [get]
 func GetOrderByAccount(context *gin.Context) {
 	type GetAccountModel struct {
-		Email string `json:"email"`
+		Email string `uri:"email"`
 	}
 	var getaccountmodel GetAccountModel
 	var account model.Account
 	var order model.Order
 
-	if err := context.ShouldBindUri(getaccountmodel); err != nil {
+	if err := context.ShouldBindUri(&getaccountmodel); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	email := context.Params.ByName("email")
 	if err := model.GetAccount(&account, email); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
 	if err := model.GetOrderByAccount(&order, &account); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	context.JSON(http.StatusOK, account)
 
@@ -107,11 +132,17 @@ func Login(context *gin.Context) {
 
 	if err := context.ShouldBindBodyWith(&logininfo, binding.JSON); err != nil {
 		fmt.Println("check login query fail", err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	if err := model.CheckAccountValid(&account, logininfo.Email, logininfo.Password); err != nil {
 		fmt.Println(err.Error())
-		context.AbortWithStatus(http.StatusNotFound)
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
 	JwtToken, _ := jwt_pkg.GenToken(logininfo.Email, logininfo.Password)

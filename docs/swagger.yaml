@@ -17,12 +17,23 @@ definitions:
       title:
         type: string
     type: object
-  model.CreateOrder:
+  model.CreateBooklistInfo:
     properties:
       account_email:
         type: string
-      book_id:
+      book_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  model.CreateOrderInfo:
+    properties:
+      account_email:
         type: string
+      book_ids:
+        items:
+          type: string
+        type: array
       remain_time:
         type: number
     type: object
@@ -129,6 +140,39 @@ paths:
           schema:
             type: string
       summary: get book record
+  /api/v1/booklist:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: booklist
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateBooklistInfo'
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: create booklist record
+  /api/v1/booklist/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: title
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: delete booklist record
   /api/v1/login:
     post:
       consumes:
@@ -156,7 +200,7 @@ paths:
         name: title
         required: true
         schema:
-          $ref: '#/definitions/model.CreateOrder'
+          $ref: '#/definitions/model.CreateOrderInfo'
       responses:
         "200":
           description: '{"msg":"ok"}'
