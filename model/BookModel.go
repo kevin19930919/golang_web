@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"golang_web/config"
 )
 
@@ -12,7 +13,7 @@ type (
 		Desc      string      `jsno:"desc"`
 		Status    int32       `json:"status" gorm:"default:0"`
 		Orders    []*Order    `gorm:"many2many:order_book;"`
-		Booklists []*Booklist `gorm:"many2many:booklsit_book;"`
+		Booklists []*Booklist `gorm:"many2many:booklist_book;"`
 	}
 
 	CreateBookModel struct {
@@ -42,9 +43,16 @@ func GetAllBooks(book *[]Book) (err error) {
 	return nil
 }
 
-func GetBook(book *Book, id string) (err error) {
-	fmt.Println("get book by id:%s", id)
-	if err = database.DB.Where("id = ?", id).First(book).Error; err != nil {
+func GetBookByID(book *Book, id string) (err error) {
+	fmt.Println("get book by id:", id)
+	err = database.DB.Where("id = ?", id).First(book).Error
+
+	if err == gorm.ErrRecordNotFound {
+		fmt.Println("Not found any book by id:", id)
+		return nil
+
+	} else if err != nil {
+		fmt.Println("get book by id fail", err)
 		return err
 	}
 	return nil

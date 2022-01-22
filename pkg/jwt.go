@@ -17,7 +17,7 @@ type Claims struct {
 
 func GenToken(email, password string) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(3 * time.Hour)
+	expireTime := nowTime.Add(24 * time.Hour)
 
 	claims := Claims{
 		email,

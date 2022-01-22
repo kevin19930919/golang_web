@@ -43,7 +43,7 @@ func CreateOrder(context *gin.Context) {
 	var books []*model.Book
 	for _, id := range ids {
 		var book model.Book
-		if err := model.GetBook(&book, id); err != nil {
+		if err := model.GetBookByID(&book, id); err != nil {
 			fmt.Println(err.Error())
 			context.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),

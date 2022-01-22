@@ -7,10 +7,11 @@ import (
 
 type (
 	Account struct {
-		ID       uint   `gorm:"primaryKey;autoIncrement:true;"`
-		Name     string `json:"name"`
-		Email    string `json:"email" gorm:"unique;not null`
-		Password string `json:"password" gorm:"unique;not null`
+		ID       uint     `gorm:"primaryKey;autoIncrement:true;"`
+		Name     string   `json:"name"`
+		Email    string   `json:"email" gorm:"unique;not null`
+		Password string   `json:"password" gorm:"unique;not null`
+		Booklist Booklist `gorm:"foreignkey:AccountEmail;references:Email"`
 	}
 
 	GetAccountModel struct {

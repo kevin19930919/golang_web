@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Album example · Bootstrap v5.1</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <header>
+        <div class="collapse bg-dark" id="navbarHeader">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8 col-md-7 py-4">
+                        <h4 class="text-white">About</h4>
+                        <p class="text-muted">Add some information about the album below, the author, or any other
+                            background context. Make it a few sentences long so folks can pick up some informative
+                            tidbits. Then, link them off to some social networking sites or contact information.</p>
+                    </div>
+                    <div class="col-sm-4 offset-md-1 py-4">
+                        <ul class="list-unstyled">
+                            <li><a href="/books" class="text-white">Books</a></li>
+                            <li><a href="#" class="text-white">My Reservation</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a href="#" class="navbar-brand d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2"
+                        viewBox="0 0 24 24">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" /></svg>
+                    <strong>Project-one Booking System</strong>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader"
+                    aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <section class="py-5 text-center container">
+            <div class="row py-lg-5">
+                <div class="col-lg-6 col-md-8 mx-auto">
+                    <h1 class="fw-light">Your Booking List</h1>
+                    <p class="lead text-muted">Something short and leading about the collection below—its contents, the
+                        creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it
+                        entirely.</p>
+                    <p>
+                        <a href="#" class="btn btn-primary my-2">Main call to action</a>
+                        <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="card_container">
+
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-muted py-5">
+        <div class="container">
+            <p class="float-end mb-1">
+                <a href="#">Back to top</a>
+            </p>
+        </div>
+    </footer>
+
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+<script>
+    account_email = get_account_email()
+    booklist_id = get_booklist_id()
+    function get_account_email() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'account_email') {
+                return val
+            }
+        }
+
+    };
+
+    function get_jwt_token() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'token') {
+                return val
+            }
+        }
+
+    };
+
+    function get_booklist_id() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'booklist_id') {
+                return val
+            }
+        }
+
+    };
+
+    function fetch_booklist_info() {
+        fetch(`/api/v1/booklist/${account_email}`, {
+            headers: { 'Authorization': `Bearer ${get_jwt_token()}` }
+        }).then(function (response) {
+            return response.json()
+        }).then(function (result) {
+            construct_book_card(result)
+        })
+    }
+
+    function create_books_card(book_info) {
+        var parent_node = document.createElement("div");
+        parent_node.className = "col"
+        parent_node.id = book_info["ID"]
+
+        var card_shadow = document.createElement("div")
+        card_shadow.className = "card shadow-sm"
+
+        var title_div = document.createElement("h3")
+        title_div.className = "card-title"
+        title_div.innerHTML = book_info["title"]
+
+        var img_div = document.createElement("img")
+        img_div.setAttribute("src", "../assets/img/books/" + book_info['ID'])
+        img_div.style.width = '225px'
+        img_div.style.height = '225px'
+
+        var text_card_div = document.createElement("div")
+        text_card_div.className = "card-body"
+
+        var text_div = document.createElement("p")
+        text_div.innerHTML = book_info["Desc"]
+
+        var button_div = document.createElement("button")
+        button_div.className = "btn btn-sm btn-outline-secondary"
+        button_div.innerHTML = "remove from booking list"
+        button_div.onclick = function () { delete_from_booklist(book_info['ID']) };
+
+        book_card = append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div)
+        return book_card
+    }
+
+    function append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div) {
+        parent_node.appendChild(card_shadow)
+        card_shadow.appendChild(img_div)
+        card_shadow.appendChild(title_div)
+
+        card_shadow.appendChild(text_card_div)
+        text_card_div.appendChild(text_div)
+        text_card_div.appendChild(button_div)
+
+        return parent_node
+    }
+
+    function construct_book_card(books_info) {
+        console.log(books_info)
+        if (books_info["Books"] === null) {
+            alert("you don't have any book in booking list")
+            return true
+        }
+        var card_container = document.getElementById("card_container")
+        for (book_info of books_info["Books"]) {
+            book_card = create_books_card(book_info);
+            card_container.appendChild(book_card)
+        }
+    }
+
+    function delete_from_booklist(book_id) {
+        fetch(`/api/v1/booklist/${booklist_id}/book/${book_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${get_jwt_token()}`,
+            },
+        }).then(function (response) {
+            return response.json()
+        }).then(function (result) {
+            alert(`delete from booking list`)
+        })
+
+    }
+
+    fetch_booklist_info()
+</script>
+
+</html>

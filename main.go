@@ -27,7 +27,7 @@ func setupServer() *gin.Engine {
 		fmt.Println("fail to connect database:%s", err)
 	}
 
-	database.DB.AutoMigrate(&model.TodoModel{}, &model.Account{}, &model.Book{}, &model.Order{})
+	database.DB.AutoMigrate(&model.TodoModel{}, &model.Account{}, &model.Book{}, &model.Order{}, &model.Booklist{})
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
@@ -42,6 +42,12 @@ func setupServer() *gin.Engine {
 	{
 		BookRouter.GET("", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "books.html", nil)
+		})
+	}
+	BooklistRouter := router.Group("/booklist")
+	{
+		BooklistRouter.GET("", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "booklist.html", nil)
 		})
 	}
 
@@ -69,7 +75,8 @@ func setupServer() *gin.Engine {
 	BookListAPI := router.Group("/api/v1/booklist")
 	{
 		BookListAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateBooklist)
-		BookListAPI.DELETE("/:id", middleware.JWTAuthMiddleware(), Controllers.DeleteBooklist)
+		BookListAPI.GET("/:account_email", middleware.JWTAuthMiddleware(), Controllers.GetBooklistByAccount)
+		BookListAPI.DELETE("/:list_id/book/:book_id", middleware.JWTAuthMiddleware(), Controllers.DeleteBookFromBooklist)
 	}
 
 	LoginAPI := router.Group("/api/v1/login")

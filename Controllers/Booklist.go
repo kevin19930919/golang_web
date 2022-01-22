@@ -7,6 +7,7 @@ import (
 	"golang_web/model"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // @Summary create booklist record
@@ -27,7 +28,7 @@ func CreateBooklist(context *gin.Context) {
 	}
 
 	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
-	ids := booklistinfo.BookIDs
+	id := booklistinfo.BookID
 
 	// ======= get account record =======
 	// decode url because email format got @
@@ -41,17 +42,13 @@ func CreateBooklist(context *gin.Context) {
 	}
 	// ====== get all book records =======
 	var books []*model.Book
-	for _, id := range ids {
-		var book model.Book
-		if err := model.GetBook(&book, id); err != nil {
-			fmt.Println(err.Error())
-			context.JSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		books = append(books, &book)
-		// ======create order ============
+	var book model.Book
+	books = append(books, &book)
+	if err := model.GetBookByID(&book, id); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 	if err := model.CreateBooklist(&booklist, books, &account); err != nil {
 		fmt.Println(err.Error())
@@ -66,30 +63,41 @@ func CreateBooklist(context *gin.Context) {
 }
 
 // @Summary delete booklist record
-// @Param title path string true "id"
+// @Param id path string true "id"
+// @Param book_id query string true "book_id"
 // @Success 200 {string} json "{"msg":"ok"}"
-// @Router /api/v1/booklist/{id} [delete]
-func DeleteBooklist(context *gin.Context) {
+// @Router /api/v1/booklist/{list_id}/book/{book_id} [delete]
+func DeleteBookFromBooklist(context *gin.Context) {
 	var booklistinfo model.DeleteBooklistInfo
 	var booklist model.Booklist
+	var book model.Book
 	if err := context.ShouldBindUri(&booklistinfo); err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("request validation fail", err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	if err := model.GetBooklist(&booklist, booklistinfo.ID); err != nil {
-		fmt.Println(err.Error())
+	fmt.Println(booklistinfo.ID)
+
+	IntID, _ := strconv.Atoi(booklistinfo.ID)
+
+	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	if err := model.DeleteBooklist(&booklist); err != nil {
-		fmt.Println(err.Error())
+	if err := model.GetBookByID(&book, booklistinfo.BookID); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := model.DeleteBookFromBooklist(&booklist, &book); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
@@ -99,4 +107,35 @@ func DeleteBooklist(context *gin.Context) {
 	fmt.Println("success create booklist record")
 	context.JSON(http.StatusOK, booklist)
 
+}
+
+func GetBooklistByAccount(context *gin.Context) {
+	var getbooklist model.GetBooklistInfo
+	var account model.Account
+	var booklist model.Booklist
+
+	if err := context.ShouldBindUri(&getbooklist); err != nil {
+		fmt.Println("get bind uri fail", err.Error())
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := model.GetAccount(&account, getbooklist.AccountEmail); err != nil {
+		fmt.Println("get account record fail", err.Error())
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	if err := model.GetBooklistByAccount(&booklist, &account); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	context.SetCookie("booklist_id", strconv.Itoa(booklist.ID), 3600, "/", "", false, false)
+	fmt.Println("success get booklist record", booklist, booklist.ID)
+	context.JSON(http.StatusOK, booklist)
 }

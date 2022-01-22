@@ -48,11 +48,9 @@
                             tidbits. Then, link them off to some social networking sites or contact information.</p>
                     </div>
                     <div class="col-sm-4 offset-md-1 py-4">
-                        <h4 class="text-white">Contact</h4>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                            <li><a href="#" class="text-white">Like on Facebook</a></li>
-                            <li><a href="#" class="text-white">Email me</a></li>
+                            <li><a href="/booklist" class="text-white">My Booking List</a></li>
+                            <li><a href="#" class="text-white">My Reservation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -66,7 +64,7 @@
                         viewBox="0 0 24 24">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                         <circle cx="12" cy="13" r="4" /></svg>
-                    <strong>Album</strong>
+                    <strong>Project-one Booking System</strong>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader"
                     aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +79,7 @@
         <section class="py-5 text-center container">
             <div class="row py-lg-5">
                 <div class="col-lg-6 col-md-8 mx-auto">
-                    <h1 class="fw-light">Album example</h1>
+                    <h1 class="fw-light">All Books</h1>
                     <p class="lead text-muted">Something short and leading about the collection below—its contents, the
                         creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it
                         entirely.</p>
@@ -120,7 +118,6 @@
 </body>
 <script>
     account_email = get_account_email()
-
     function get_account_email() {
         cookies = document.cookie.split(';');
         for (cookie of cookies) {
@@ -180,8 +177,8 @@
 
         var button_div = document.createElement("button")
         button_div.className = "btn btn-sm btn-outline-secondary"
-        button_div.innerHTML = "Order"
-        button_div.onclick = function () { place_order(book_info['ID']) };
+        button_div.innerHTML = "Add in booking list"
+        button_div.onclick = function () { add_in_bookist(book_info['ID']) };
 
         book_card = append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div)
         return book_card
@@ -207,15 +204,18 @@
         }
     }
 
-    function place_order(book_id) {
-        fetch(`/api/v1/order`, {
+    function add_in_bookist(book_id) {
+        fetch(`/api/v1/booklist`, {
             method: 'POST',
-            header: { "Content-Type": "application/json" },
-            body: JSON.stringify({ book_id: book_id, account_email: account_email, remain_time: 7 * 24 * 60 * 60 })
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${get_jwt_token()}`,
+            },
+            body: JSON.stringify({ book_id: book_id, account_email: account_email })
         }).then(function (response) {
             return response.json()
         }).then(function (result) {
-            alert('place order success')
+            alert(`add to booking list`)
         })
 
     }
