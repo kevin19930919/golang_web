@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"golang_web/config"
 )
 
@@ -31,12 +32,19 @@ type (
 )
 
 //CreateAccount ... Insert New data
-func CreatetAccount(account *Account) (err error) {
-	fmt.Println("create account:%s", account)
-	if err = database.DB.Create(account).Error; err != nil {
-		return err
-	}
-	return nil
+func CreatetAccountBooklist(account *Account, booklist *Booklist) (err error) {
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		fmt.Println("create account:%s", account)
+		if err = tx.Create(account).Error; err != nil {
+			return err
+		}
+
+		if err = tx.Model(account).Association("Booklist").Append(booklist).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func GetAllAccounts(account *[]Account) (err error) {
@@ -56,8 +64,9 @@ func GetAccount(account *Account, email string) (err error) {
 }
 
 func CheckAccountValid(account *Account, email string, password string) (err error) {
-	if err = database.DB.Where("email = ?", email).Where("password = ?", password).First(account).Error; err != nil {
+	if err = database.DB.Preload("Booklist").Where("email = ?", email).Where("password = ?", password).Find(account).Error; err != nil {
 		return err
 	}
+
 	return nil
 }

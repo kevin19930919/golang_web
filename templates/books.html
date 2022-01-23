@@ -51,6 +51,7 @@
                         <ul class="list-unstyled">
                             <li><a href="/booklist" class="text-white">My Booking List</a></li>
                             <li><a href="#" class="text-white">My Reservation</a></li>
+                            <li><a href="/login" class="text-white">Login</a></li>
                         </ul>
                     </div>
                 </div>
@@ -118,6 +119,7 @@
 </body>
 <script>
     account_email = get_account_email()
+    list_id = get_booklist_id()
     function get_account_email() {
         cookies = document.cookie.split(';');
         for (cookie of cookies) {
@@ -136,6 +138,18 @@
             let key = cookie.split('=')[0].trim();
             let val = cookie.split('=')[1].trim();
             if (key == 'token') {
+                return val
+            }
+        }
+
+    };
+
+    function get_booklist_id() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'list_id') {
                 return val
             }
         }
@@ -205,13 +219,13 @@
     }
 
     function add_in_bookist(book_id) {
-        fetch(`/api/v1/booklist`, {
-            method: 'POST',
+        fetch(`/api/v1/booklist/`, {
+            method: 'PATCH',
             headers: {
                 "Content-Type": "application/json",
                 'Authorization': `Bearer ${get_jwt_token()}`,
             },
-            body: JSON.stringify({ book_id: book_id, account_email: account_email })
+            body: JSON.stringify({ list_id: list_id, book_id: book_id, account_email: account_email })
         }).then(function (response) {
             return response.json()
         }).then(function (result) {

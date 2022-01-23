@@ -13,9 +13,9 @@ type (
 		Books        []*Book `gorm:"many2many:booklist_book;"`
 	}
 
-	CreateBooklistInfo struct {
-		BookID       string `json:"book_id"`
-		AccountEmail string `json:"account_email"`
+	InsertBooklistInfo struct {
+		ID     string `json:"list_id" binding:"required"`
+		BookID string `json:"book_id" binding:"required"`
 	}
 
 	DeleteBooklistInfo struct {
@@ -28,21 +28,11 @@ type (
 	}
 )
 
-func CreateBooklist(booklist *Booklist, books []*Book, account *Account) (err error) {
-	// check book is not ordered
-	booklist.Books = books
+func InsertBookInBooklist(booklist *Booklist, book *Book) (err error) {
 
 	return database.DB.Transaction(func(tx *gorm.DB) error {
-		// do some database operations in the transaction (use 'tx' from this point, not 'db')
-		// if err := tx.Preload("Books").Find(booklist).Error; err != nil {
-		// 	fmt.Print("related book by book list fail")
-		// 	return err
-		// }
-
-		if err := tx.Create(booklist).Error; err != nil {
-			return err
-		}
-		if err := tx.Model(&account).Association("Booklist").Append(booklist).Error; err != nil {
+		if err = tx.Model(booklist).Association("Books").Append(book).Error; err != nil {
+			fmt.Println("fail to insert book in book list")
 			return err
 		}
 		// return nil will commit the whole transaction
@@ -52,8 +42,7 @@ func CreateBooklist(booklist *Booklist, books []*Book, account *Account) (err er
 }
 
 func GetBooklistByID(booklist *Booklist, id int) (err error) {
-	fmt.Println("get booklist by id", id)
-	if err = database.DB.Where("id = ?", id).First(booklist).Error; err != nil {
+	if err = database.DB.Preload("Books").Where("id = ?", id).First(booklist).Error; err != nil {
 		fmt.Println("get booklist by id fail", err)
 		return err
 	}

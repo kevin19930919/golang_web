@@ -23,6 +23,10 @@ type (
 		BookIDs      []string `json:"book_ids"`
 		AccountEmail string   `json:"account_email"`
 	}
+
+	CreateOrderByListInfo struct {
+		BooklistID string `json:"list_id"`
+	}
 )
 
 //CreateOrder ... Insert New data
@@ -44,6 +48,38 @@ func CreateOrder(order *Order, books []*Book, account *Account) (err error) {
 			return err
 		}
 		if err := tx.Model(order.Books).Update("status", 1).Error; err != nil {
+			return err
+		}
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+}
+
+func CreateOderRemoveList(order *Order, booklist *Booklist) (err error) {
+	var account Account
+	if err := GetAccount(&account, booklist.AccountEmail); err != nil {
+		return err
+	}
+	order.Account = account
+	// check book is not ordered
+	order.Books = booklist.Books
+
+	local, _ := time.LoadLocation("Local")
+	order.CreateTime = time.Now().In(local)
+
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(order).Error; err != nil {
+			fmt.Println("fail to create order")
+			return err
+		}
+		if err := tx.Model(order.Books).Update("status", 1).Error; err != nil {
+			fmt.Println("fail to update book records")
+			return err
+		}
+		// remove booklist association
+		if err = tx.Model(booklist).Association("Books").Clear().Error; err != nil {
+			fmt.Println("fail to remove book in book list")
 			return err
 		}
 		// return nil will commit the whole transaction

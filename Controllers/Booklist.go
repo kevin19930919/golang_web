@@ -6,51 +6,38 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"golang_web/model"
 	"net/http"
-	"net/url"
 	"strconv"
 )
 
 // @Summary create booklist record
 // @Accept  json
-// @Param title body model.CreateBooklistInfo true "booklist"
+// @Param title body model.InsertBooklistInfo true "booklist"
 // @Success 200 {string} json "{"msg":"ok"}"
-// @Router /api/v1/booklist [post]
-func CreateBooklist(context *gin.Context) {
+// @Router /api/v1/booklist/{list_id}/book/{book_id} [post]
+func InsertBookInBooklist(context *gin.Context) {
 	var booklist model.Booklist
-	var booklistinfo model.CreateBooklistInfo
-	var account model.Account
-	if err := context.ShouldBindBodyWith(&booklist, binding.JSON); err != nil {
-		fmt.Println(err.Error())
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+	var booklistinfo model.InsertBooklistInfo
 
 	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
 	id := booklistinfo.BookID
-
-	// ======= get account record =======
-	// decode url because email format got @
-	email, _ := url.QueryUnescape(booklistinfo.AccountEmail)
-	if err := model.GetAccount(&account, email); err != nil {
-		fmt.Println(err.Error())
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	// ====== get all book records =======
-	var books []*model.Book
 	var book model.Book
-	books = append(books, &book)
+
 	if err := model.GetBookByID(&book, id); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-	if err := model.CreateBooklist(&booklist, books, &account); err != nil {
+
+	IntID, _ := strconv.Atoi(booklistinfo.ID)
+	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := model.InsertBookInBooklist(&booklist, &book); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -135,7 +122,41 @@ func GetBooklistByAccount(context *gin.Context) {
 		})
 		return
 	}
-	context.SetCookie("booklist_id", strconv.Itoa(booklist.ID), 3600, "/", "", false, false)
 	fmt.Println("success get booklist record", booklist, booklist.ID)
+	context.JSON(http.StatusOK, booklist)
+}
+
+func CreateOrderRemovelist(context *gin.Context) {
+	var booklist model.Booklist
+	var booklistinfo model.InsertBooklistInfo
+
+	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
+	id := booklistinfo.BookID
+	var book model.Book
+
+	if err := model.GetBookByID(&book, id); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	IntID, _ := strconv.Atoi(booklistinfo.ID)
+	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := model.InsertBookInBooklist(&booklist, &book); err != nil {
+		fmt.Println(err.Error())
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	fmt.Println("success create booklist record")
 	context.JSON(http.StatusOK, booklist)
 }

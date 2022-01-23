@@ -32,7 +32,7 @@ func setupServer() *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/assets", "./assets")
-	indexRouter := router.Group("/")
+	indexRouter := router.Group("/login")
 	{
 		indexRouter.GET("", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "index.html", nil)
@@ -74,7 +74,7 @@ func setupServer() *gin.Engine {
 
 	BookListAPI := router.Group("/api/v1/booklist")
 	{
-		BookListAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateBooklist)
+		BookListAPI.PATCH("", middleware.JWTAuthMiddleware(), Controllers.InsertBookInBooklist)
 		BookListAPI.GET("/:account_email", middleware.JWTAuthMiddleware(), Controllers.GetBooklistByAccount)
 		BookListAPI.DELETE("/:list_id/book/:book_id", middleware.JWTAuthMiddleware(), Controllers.DeleteBookFromBooklist)
 	}

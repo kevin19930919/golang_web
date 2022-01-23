@@ -6,54 +6,36 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"golang_web/model"
 	"net/http"
-	"net/url"
+	"strconv"
 )
 
 // @Summary add order record
 // @Accept  json
-// @Param title body model.CreateOrderInfo true "order"
+// @Param title body model.CreateOrderByListInfo true "order"
 // @Success 200 {string} json "{"msg":"ok"}"
 // @Router /api/v1/order [post]
 func CreateOrder(context *gin.Context) {
 	var order model.Order
-	var orderinfo model.CreateOrderInfo
-	var account model.Account
-	if err := context.ShouldBindBodyWith(&order, binding.JSON); err != nil {
+	var booklist model.Booklist
+	var orderinfo model.CreateOrderByListInfo
+
+	if err := context.ShouldBindBodyWith(&orderinfo, binding.JSON); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-
-	context.ShouldBindBodyWith(&orderinfo, binding.JSON)
-	ids := orderinfo.BookIDs
-
-	// ======= get account record =======
-	// decode url because email format got @
-	email, _ := url.QueryUnescape(orderinfo.AccountEmail)
-	if err := model.GetAccount(&account, email); err != nil {
-		fmt.Println(err.Error())
+	// ======= get book list record =======
+	IntListID, _ := strconv.Atoi(orderinfo.BooklistID)
+	if err := model.GetBooklistByID(&booklist, IntListID); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-	// ====== get all book records =======
-	var books []*model.Book
-	for _, id := range ids {
-		var book model.Book
-		if err := model.GetBookByID(&book, id); err != nil {
-			fmt.Println(err.Error())
-			context.JSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		books = append(books, &book)
-		// ======create order ============
-	}
-	if err := model.CreateOrder(&order, books, &account); err != nil {
+
+	if err := model.CreateOderRemoveList(&order, &booklist); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
