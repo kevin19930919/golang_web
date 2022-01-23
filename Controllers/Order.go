@@ -47,18 +47,12 @@ func CreateOrder(context *gin.Context) {
 	context.JSON(http.StatusOK, order)
 }
 
-// @Summary add order record
-// @Accept  json
-// @Param id path string true "id"
+// @Summary return order
+// @Param id path string true "order_id"
 // @Success 200 {string} json "{"msg":"ok"}"
 // @Router /api/v1/order/{id} [patch]
-func UpdateOrder(context *gin.Context) {
-	type UpdateOrderInfo struct {
-		ID            int32 `json:"id"`
-		OrderReturned bool  `form:"order_returned"`
-		BookStatus    int32 `form:"book_status"`
-	}
-	var updateinfo UpdateOrderInfo
+func ReturnOrder(context *gin.Context) {
+	var updateinfo model.ReturneOrderInfo
 	var order model.Order
 
 	if err := context.ShouldBind(&updateinfo); err != nil {
@@ -77,7 +71,7 @@ func UpdateOrder(context *gin.Context) {
 		return
 	}
 
-	if err := model.UpdateOderStatusBookReturned(&order, updateinfo.OrderReturned, updateinfo.BookStatus); err != nil {
+	if err := model.ReturnBooks(&order); err != nil {
 		fmt.Println(err.Error())
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),

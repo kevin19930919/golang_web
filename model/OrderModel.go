@@ -27,6 +27,10 @@ type (
 	CreateOrderByListInfo struct {
 		BooklistID string `json:"list_id"`
 	}
+
+	ReturneOrderInfo struct {
+		ID int32 `json:"order_id"`
+	}
 )
 
 //CreateOrder ... Insert New data
@@ -122,6 +126,24 @@ func UpdateOderStatusBookReturned(order *Order, returned bool, book_status int32
 		}
 
 		if err := tx.Model(order.Books).Update("status", book_status).Error; err != nil {
+			return err
+		}
+		// return nil will commit the whole transaction
+		return nil
+	})
+}
+
+func ReturnBooks(order *Order) (err error) {
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		// preload book table
+		if err := tx.Preload("Books").Find(order).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(order).Update("returned", true).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(order.Books).Update("status", 0).Error; err != nil {
 			return err
 		}
 		// return nil will commit the whole transaction

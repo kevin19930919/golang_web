@@ -69,7 +69,7 @@ func setupServer() *gin.Engine {
 	OrderAPI := router.Group("/api/v1/order")
 	{
 		OrderAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateOrder)
-		OrderAPI.PATCH("/:id", middleware.JWTAuthMiddleware(), Controllers.UpdateOrder)
+		OrderAPI.PATCH("/:order_id", middleware.JWTAuthMiddleware(), Controllers.ReturnOrder)
 	}
 
 	BookListAPI := router.Group("/api/v1/booklist")
