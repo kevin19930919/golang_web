@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -12,12 +13,25 @@ import (
 	"net/http"
 )
 
+var ctx = context.Background()
+
 func main() {
 	server := setupServer()
 	server.Run(":8080")
 }
 
+func SetupRedis() {
+	pong, err := database.Rdb.Ping(ctx).Result()
+	if err != nil {
+		fmt.Println("連線redis出錯，錯誤資訊：%v", err)
+	} else {
+		fmt.Println("成功連線redis", pong)
+	}
+}
+
 func setupServer() *gin.Engine {
+
+	SetupRedis()
 
 	var err error
 	var constr string
@@ -69,7 +83,7 @@ func setupServer() *gin.Engine {
 	OrderAPI := router.Group("/api/v1/order")
 	{
 		OrderAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateOrder)
-		OrderAPI.PATCH("/:order_id", middleware.JWTAuthMiddleware(), Controllers.ReturnOrder)
+		// OrderAPI.PATCH("/:order_id", middleware.JWTAuthMiddleware(), Controllers.ReturnOrder)
 	}
 
 	BookListAPI := router.Group("/api/v1/booklist")

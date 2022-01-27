@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"golang_web/config"
 	"golang_web/pkg"
 	"net/http"
 	"strings"
@@ -28,6 +29,10 @@ func JWTAuthMiddleware() func(context *gin.Context) {
 		}
 		fmt.Println("jwt tokn authorize success")
 		context.Set("email", mc.Email)
+		err = database.Rdb.Set(context, "email", mc.Email, 0).Err()
+		if err != nil {
+			panic(err)
+		}
 		context.Next()
 	}
 }
