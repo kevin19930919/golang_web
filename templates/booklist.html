@@ -95,9 +95,27 @@
         <div class="album py-5 bg-light">
             <div class="container">
 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="card_container">
-
-                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="card_container"></div>
+                <table class="table table-dark" id="book-list-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Desc</th>
+                            <th>Image</th>
+                            <th>Days</th>
+                            <th scope="col">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="book-table-tbody">
+                        <!-- <tr>
+                            <td></td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                        </tr> -->
+                    </tbody>
+                </table>
 
             </div>
         </div>
@@ -120,6 +138,14 @@
 <script>
     account_email = get_account_email()
     list_id = get_booklist_id()
+    var days_choice = [1, 2, 3, 4, 5, 6, 7]
+    var days_selection = document.createElement("select");
+    for (var i = 0; i < days_choice.length; i++) {
+        var option = document.createElement("option");
+        option.value = days_choice[i];
+        option.text = days_choice[i];
+        days_selection.appendChild(option);
+    }
     function get_account_email() {
         cookies = document.cookie.split(';');
         for (cookie of cookies) {
@@ -167,59 +193,59 @@
     }
 
     function create_books_card(book_info) {
-        var parent_node = document.createElement("div");
-        parent_node.className = "col"
+        var parent_node = document.createElement("tr");
         parent_node.id = book_info["ID"]
 
-        var card_shadow = document.createElement("div")
-        card_shadow.className = "card shadow-sm"
-
-        var title_div = document.createElement("h3")
-        title_div.className = "card-title"
+        var title_div = document.createElement("td")
         title_div.innerHTML = book_info["title"]
 
+        var status_div = document.createElement("td")
+        status_div.innerHTML = book_info["status"]
+
+        var img_td = document.createElement("td")
         var img_div = document.createElement("img")
         img_div.setAttribute("src", "../assets/img/books/" + book_info['ID'])
-        img_div.style.width = '225px'
-        img_div.style.height = '225px'
+        img_div.style.width = 'auto'
+        img_div.style.height = 'auto'
 
-        var text_card_div = document.createElement("div")
-        text_card_div.className = "card-body"
+        var text_div = document.createElement("td")
+        text_div.innerHTML = book_info["desc"]
 
-        var text_div = document.createElement("p")
-        text_div.innerHTML = book_info["Desc"]
+        var days_div = document.createElement("td")
+        days_div.appendChild(days_selection)
 
+        var button_td = document.createElement("td")
         var button_div = document.createElement("button")
         button_div.className = "btn btn-sm btn-outline-secondary"
-        button_div.innerHTML = "remove from booking list"
+        button_div.innerHTML = "Remove"
         button_div.onclick = function () { delete_from_booklist(book_info['ID']) };
+        button_td.appendChild(button_div)
 
-        book_card = append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div)
+        book_card = append_all_tag(parent_node, title_div, status_div, img_td, img_div, text_div, button_td, days_div)
         return book_card
     }
 
-    function append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div) {
-        parent_node.appendChild(card_shadow)
-        card_shadow.appendChild(img_div)
-        card_shadow.appendChild(title_div)
-
-        card_shadow.appendChild(text_card_div)
-        text_card_div.appendChild(text_div)
-        text_card_div.appendChild(button_div)
+    function append_all_tag(parent_node, title_div, status_div, img_td, img_div, text_div, button_td, days_div) {
+        parent_node.appendChild(title_div)
+        parent_node.appendChild(status_div)
+        parent_node.appendChild(text_div)
+        img_td.appendChild(img_div)
+        parent_node.appendChild(img_td)
+        parent_node.appendChild(days_div)
+        parent_node.appendChild(button_td)
 
         return parent_node
     }
 
     function construct_book_card(books_info) {
-        console.log(books_info)
         if (books_info["Books"] === null) {
             alert("you don't have any book in booking list")
             return true
         }
-        var card_container = document.getElementById("card_container")
+        var table_body = document.getElementById("book-table-tbody")
         for (book_info of books_info["Books"]) {
             book_card = create_books_card(book_info);
-            card_container.appendChild(book_card)
+            table_body.appendChild(book_card)
         }
     }
 
@@ -237,14 +263,25 @@
 
     }
 
+    function get_order_date() {
+        var order_data = JSON.stringify({
+            list_id: list_id,
+            orders: []
+        });
+
+    }
+
     function place_order() {
+        order_data = get_order_date();
         fetch(`/api/v1/order/`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
                 'Authorization': `Bearer ${get_jwt_token()}`,
             },
-            body: JSON.stringify({ list_id: list_id })
+            body: JSON.stringify({
+                list_id: list_id,
+            })
         }).then(function (response) {
             return response.json()
         }).then(function (result) {

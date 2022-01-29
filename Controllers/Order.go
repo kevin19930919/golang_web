@@ -46,16 +46,30 @@ func CreateOrder(context *gin.Context) {
 	for i := 0; i < len(orderinfo.Orders); i++ {
 		// ======= get book record ========
 		var book model.Book
+
 		if err := model.GetBookByID(&book, orderinfo.Orders[i].BookID); err != nil {
 			context.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
 			return
 		}
+		// ===== check book status ======
+		bookinter := service.Book{orderinfo.Orders[i].BookID}
+		status, err := bookinter.CheckBookAvaliable()
+		if err != nil {
+			context.JSON(http.StatusNotFound, gin.H{
+				"error": err.Error(),
+			})
+			return
+		} else if status == false {
+			continue
+		} else {
+
+		}
+
 		// ==========   ============
 		var order model.Order
-		order.EndDate = orderinfo.Orders[i].EndDate
-		if err := service.CreateOderRemoveList(&order, &book, &account, &booklist); err != nil {
+		if err := service.CreateOderRemoveList(&order, orderinfo.Orders[i].Days, &book, &account, &booklist); err != nil {
 			context.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
@@ -67,38 +81,30 @@ func CreateOrder(context *gin.Context) {
 	context.JSON(http.StatusOK, booklist)
 }
 
-// // @Summary return order
-// // @Param id path string true "order_id"
-// // @Success 200 {string} json "{"msg":"ok"}"
-// // @Router /api/v1/order/{id} [patch]
-// func ReturnOrder(context *gin.Context) {
-// 	var updateinfo model.ReturneOrderInfo
-// 	var order model.Order
+// @Summary return order
+// @Param id path string true "order_id"
+// @Success 200 {string} json "{"msg":"ok"}"
+// @Router /api/v1/order/{id} [patch]
+func ReturnOrder(context *gin.Context) {
+	var updateinfo model.ReturneOrderInfo
 
-// 	if err := context.ShouldBind(&updateinfo); err != nil {
-// 		fmt.Println(err.Error())
-// 		context.JSON(http.StatusNotFound, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
+	if err := context.ShouldBind(&updateinfo); err != nil {
+		fmt.Println(err.Error())
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-// 	if err := service.GetOrderByID(&order, updateinfo.ID); err != nil {
-// 		fmt.Println(err.Error())
-// 		context.JSON(http.StatusNotFound, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
+	bookinter := service.Order{updateinfo.ID}
+	if err := bookinter.ReturnBooks(); err != nil {
+		fmt.Println(err.Error())
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-// 	if err := service.ReturnBooks(&order); err != nil {
-// 		fmt.Println(err.Error())
-// 		context.JSON(http.StatusNotFound, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
-
-// 	fmt.Println("success update order")
-// 	context.JSON(http.StatusOK, order)
-// }
+	fmt.Println("success update order")
+	context.JSON(http.StatusOK, updateinfo)
+}

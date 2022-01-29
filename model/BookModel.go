@@ -10,7 +10,7 @@ type (
 	Book struct {
 		ID        string      `gorm:"primaryKey;"`
 		Title     string      `json:"title"`
-		Desc      string      `jsno:"desc"`
+		Desc      string      `json:"desc"`
 		Status    int32       `json:"status" gorm:"default:0"`
 		Orders    []*Order    `gorm:"many2many:order_book;"`
 		Booklists []*Booklist `gorm:"many2many:booklist_book;"`
