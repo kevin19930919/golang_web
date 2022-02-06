@@ -64,6 +64,12 @@ func setupServer() *gin.Engine {
 			c.HTML(http.StatusOK, "booklist.html", nil)
 		})
 	}
+	OrderRouter := router.Group("/order")
+	{
+		OrderRouter.GET("", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "order.html", nil)
+		})
+	}
 
 	BookAPI := router.Group("/api/v1/book")
 	{
@@ -77,13 +83,14 @@ func setupServer() *gin.Engine {
 		AccountAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateAccount)
 		AccountAPI.GET("", middleware.JWTAuthMiddleware(), Controllers.GetAllAccount)
 		AccountAPI.GET("/:email", middleware.JWTAuthMiddleware(), Controllers.GetAccount)
-		AccountAPI.GET("/:email/order", middleware.JWTAuthMiddleware(), Controllers.GetOrderByAccount)
+		// AccountAPI.GET("/:email/order", middleware.JWTAuthMiddleware(), Controllers.GetOrderByAccount)
 	}
 
 	OrderAPI := router.Group("/api/v1/order")
 	{
 		OrderAPI.POST("", middleware.JWTAuthMiddleware(), Controllers.CreateOrder)
-		// OrderAPI.PATCH("/:order_id", middleware.JWTAuthMiddleware(), Controllers.ReturnOrder)
+		OrderAPI.GET("/:account_email", middleware.JWTAuthMiddleware(), Controllers.GetOrder)
+		OrderAPI.PATCH("", middleware.JWTAuthMiddleware(), Controllers.ReturnOrder)
 	}
 
 	BookListAPI := router.Group("/api/v1/booklist")

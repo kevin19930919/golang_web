@@ -51,6 +51,7 @@
                         <ul class="list-unstyled">
                             <li><a href="/books" class="text-white">Books</a></li>
                             <li><a href="#" class="text-white">My Reservation</a></li>
+                            <li><a href="/order" class="text-white">My Order</a></li>
                             <li><a href="/login" class="text-white">Login</a></li>
                         </ul>
                     </div>
@@ -96,8 +97,8 @@
             <div class="container">
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="card_container"></div>
-                <table class="table table-dark" id="book-list-table">
-                    <thead>
+                <table class="table" id="book-list-table">
+                    <thead class="thead-dark">
                         <tr>
                             <th scope="col">Title</th>
                             <th scope="col">Status</th>
@@ -108,12 +109,6 @@
                         </tr>
                     </thead>
                     <tbody id="book-table-tbody">
-                        <!-- <tr>
-                            <td></td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr> -->
                     </tbody>
                 </table>
 
@@ -142,6 +137,10 @@
     var days_selection = document.createElement("select");
     for (var i = 0; i < days_choice.length; i++) {
         var option = document.createElement("option");
+        if (i === 0) {
+            console.log(days_choice[i])
+            option.selected = true
+        }
         option.value = days_choice[i];
         option.text = days_choice[i];
         days_selection.appendChild(option);
@@ -263,25 +262,34 @@
 
     }
 
-    function get_order_date() {
-        var order_data = JSON.stringify({
+    function get_order_data() {
+        var book_infos = document.getElementById("book-table-tbody").children
+        var order_data = {
             list_id: list_id,
             orders: []
-        });
+        }
+        for (var i = 0; i < book_infos.length; i++) {
+            console.log(book_infos[i].id)
+            console.log(book_infos[i].children[4].children[0].value)
+            var book_info = {
+                book_id: book_infos[i].id,
+                end_date: book_infos[i].children[4].children[0].value
+            }
+            order_data.orders.push(book_info)
+        };
+        return JSON.stringify(order_data)
 
     }
 
     function place_order() {
-        order_data = get_order_date();
+        order_data = get_order_data();
         fetch(`/api/v1/order/`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
                 'Authorization': `Bearer ${get_jwt_token()}`,
             },
-            body: JSON.stringify({
-                list_id: list_id,
-            })
+            body: order_data
         }).then(function (response) {
             return response.json()
         }).then(function (result) {

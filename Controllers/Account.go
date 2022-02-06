@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang_web/model"
-	"golang_web/services"
+	// "golang_web/services"
 	"net/http"
 )
 
@@ -82,40 +82,40 @@ func GetAccount(context *gin.Context) {
 	context.JSON(http.StatusOK, account)
 }
 
-// @Summary get order by account
-// @Param email path string true "email"
-// @Router /api/v1/account/{email}/order [get]
-func GetOrderByAccount(context *gin.Context) {
-	type GetAccountModel struct {
-		Email string `uri:"email"`
-	}
-	var getaccountmodel GetAccountModel
-	var account model.Account
-	var order model.Order
+// // @Summary get order by account
+// // @Param email path string true "email"
+// // @Router /api/v1/account/{email}/order [get]
+// func GetOrderByAccount(context *gin.Context) {
+// 	type GetAccountModel struct {
+// 		Email string `uri:"email"`
+// 	}
+// 	var getaccountmodel GetAccountModel
+// 	var account model.Account
+// 	var order model.Order
 
-	if err := context.ShouldBindUri(&getaccountmodel); err != nil {
-		fmt.Println(err.Error())
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	email := context.Params.ByName("email")
-	if err := model.GetAccount(&account, email); err != nil {
-		fmt.Println(err.Error())
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+// 	if err := context.ShouldBindUri(&getaccountmodel); err != nil {
+// 		fmt.Println(err.Error())
+// 		context.JSON(http.StatusNotFound, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
+// 	email := context.Params.ByName("email")
+// 	if err := model.GetAccount(&account, email); err != nil {
+// 		fmt.Println(err.Error())
+// 		context.JSON(http.StatusNotFound, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	if err := service.GetOrderByAccount(&order, &account); err != nil {
-		fmt.Println(err.Error())
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	context.JSON(http.StatusOK, account)
+// 	if err := service.GetUnReturnOrderByAccount(&order, &account); err != nil {
+// 		fmt.Println(err.Error())
+// 		context.JSON(http.StatusNotFound, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
+// 	context.JSON(http.StatusOK, account)
 
-}
+// }

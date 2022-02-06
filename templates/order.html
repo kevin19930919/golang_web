@@ -49,9 +49,8 @@
                     </div>
                     <div class="col-sm-4 offset-md-1 py-4">
                         <ul class="list-unstyled">
-                            <li><a href="/booklist" class="text-white">My Booking List</a></li>
+                            <li><a href="/books" class="text-white">Books</a></li>
                             <li><a href="#" class="text-white">My Reservation</a></li>
-                            <li><a href="/order" class="text-white">My Order</a></li>
                             <li><a href="/login" class="text-white">Login</a></li>
                         </ul>
                     </div>
@@ -81,13 +80,12 @@
         <section class="py-5 text-center container">
             <div class="row py-lg-5">
                 <div class="col-lg-6 col-md-8 mx-auto">
-                    <h1 class="fw-light">All Books</h1>
+                    <h1 class="fw-light">Your Booking List</h1>
                     <p class="lead text-muted">Something short and leading about the collection below—its contents, the
                         creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it
                         entirely.</p>
                     <p>
-                        <a href="#" class="btn btn-primary my-2">Main call to action</a>
-                        <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+                        <button href="#" class="btn btn-secondary my-2">Secondary action</button>
                     </p>
                 </div>
             </div>
@@ -96,9 +94,21 @@
         <div class="album py-5 bg-light">
             <div class="container">
 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="card_container">
-
-                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="card_container"></div>
+                <table class="table" id="book-list-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Returned</th>
+                            <th scope="col">Desc</th>
+                            <th>Image</th>
+                            <th>Days</th>
+                            <th scope="col">Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="book-table-tbody">
+                    </tbody>
+                </table>
 
             </div>
         </div>
@@ -120,19 +130,7 @@
 </body>
 <script>
     account_email = get_account_email()
-    list_id = get_booklist_id()
-    function get_account_email() {
-        cookies = document.cookie.split(';');
-        for (cookie of cookies) {
-            let key = cookie.split('=')[0].trim();
-            let val = cookie.split('=')[1].trim();
-            if (key == 'account_email') {
-                return val
-            }
-        }
-
-    };
-
+    fetch_order_info()
     function get_jwt_token() {
         cookies = document.cookie.split(';');
         for (cookie of cookies) {
@@ -145,20 +143,8 @@
 
     };
 
-    function get_booklist_id() {
-        cookies = document.cookie.split(';');
-        for (cookie of cookies) {
-            let key = cookie.split('=')[0].trim();
-            let val = cookie.split('=')[1].trim();
-            if (key == 'list_id') {
-                return val
-            }
-        }
-
-    };
-
-    function fetch_books_info() {
-        fetch(`/api/v1/book`, {
+    function fetch_order_info() {
+        fetch(`/api/v1/order/${account_email}`, {
             headers: { 'Authorization': `Bearer ${get_jwt_token()}` }
         }).then(function (response) {
             return response.json()
@@ -168,74 +154,88 @@
     }
 
     function create_books_card(book_info) {
-        var parent_node = document.createElement("div");
-        parent_node.className = "col"
-        parent_node.id = book_info["ID"]
+        console.log(book_info)
+        var parent_node = document.createElement("tr");
+        parent_node.id = book_info["Book"]["ID"]
 
-        var card_shadow = document.createElement("div")
-        card_shadow.className = "card shadow-sm"
+        var title_div = document.createElement("td")
+        title_div.innerHTML = book_info["Book"]["title"]
 
-        var title_div = document.createElement("h3")
-        title_div.className = "card-title"
-        title_div.innerHTML = book_info["title"]
+        var status_div = document.createElement("td")
+        status_div.innerHTML = book_info["returned"]
 
+        var img_td = document.createElement("td")
         var img_div = document.createElement("img")
-        img_div.setAttribute("src", "../assets/img/books/" + book_info['ID'])
-        img_div.style.width = '225px'
-        img_div.style.height = '225px'
+        img_div.setAttribute("src", "../assets/img/books/" + book_info["Book"]['ID'])
+        img_div.style.width = 'auto'
+        img_div.style.height = 'auto'
 
-        var text_card_div = document.createElement("div")
-        text_card_div.className = "card-body"
+        var text_div = document.createElement("td")
+        text_div.innerHTML = book_info["Book"]["desc"]
 
-        var text_div = document.createElement("p")
-        text_div.innerHTML = book_info["Desc"]
+        var days_div = document.createElement("td")
+        days_div.innerHTML = book_info['end_date']
 
+        var button_td = document.createElement("td")
         var button_div = document.createElement("button")
         button_div.className = "btn btn-sm btn-outline-secondary"
-        button_div.innerHTML = "Add in booking list"
-        button_div.onclick = function () { add_in_bookist(book_info['ID']) };
+        button_div.innerHTML = "Return"
+        button_div.onclick = function () { return_book(book_info['ID']) };
+        button_td.appendChild(button_div)
 
-        book_card = append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div)
+        book_card = append_all_tag(parent_node, title_div, status_div, img_td, img_div, text_div, button_td, days_div)
         return book_card
     }
 
-    function append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div) {
-        parent_node.appendChild(card_shadow)
-        card_shadow.appendChild(img_div)
-        card_shadow.appendChild(title_div)
-
-        card_shadow.appendChild(text_card_div)
-        text_card_div.appendChild(text_div)
-        text_card_div.appendChild(button_div)
+    function append_all_tag(parent_node, title_div, status_div, img_td, img_div, text_div, button_td, days_div) {
+        parent_node.appendChild(title_div)
+        parent_node.appendChild(status_div)
+        parent_node.appendChild(text_div)
+        img_td.appendChild(img_div)
+        parent_node.appendChild(img_td)
+        parent_node.appendChild(days_div)
+        parent_node.appendChild(button_td)
 
         return parent_node
     }
 
     function construct_book_card(books_info) {
-        var card_container = document.getElementById("card_container")
+        if (books_info.length === null) {
+            alert("you don't have any book in booking list")
+            return true
+        }
+        var table_body = document.getElementById("book-table-tbody")
         for (book_info of books_info) {
             book_card = create_books_card(book_info);
-            card_container.appendChild(book_card)
+            table_body.appendChild(book_card)
         }
     }
 
-    function add_in_bookist(book_id) {
-        fetch(`/api/v1/booklist/`, {
+    function return_book(order_id) {
+        fetch(`/api/v1/order`, {
             method: 'PATCH',
             headers: {
-                "Content-Type": "application/json",
                 'Authorization': `Bearer ${get_jwt_token()}`,
             },
-            body: JSON.stringify({ list_id: list_id, book_id: book_id, account_email: account_email })
+            body: JSON.stringify({ order_id: order_id })
         }).then(function (response) {
             return response.json()
         }).then(function (result) {
-            alert(`add to booking list`)
+            window.location = '/order'
         })
-
     }
 
-    fetch_books_info()
+    function get_account_email() {
+        cookies = document.cookie.split(';');
+        for (cookie of cookies) {
+            let key = cookie.split('=')[0].trim();
+            let val = cookie.split('=')[1].trim();
+            if (key == 'account_email') {
+                return val
+            }
+        }
+
+    };
 </script>
 
 </html>
