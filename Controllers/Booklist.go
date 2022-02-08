@@ -64,7 +64,6 @@ func InsertBookInBooklist(context *gin.Context) {
 // @Router /api/v1/booklist/{list_id}/book/{book_id} [delete]
 func DeleteBookFromBooklist(context *gin.Context) {
 	var booklistinfo model.DeleteBooklistInfo
-	var booklist model.Booklist
 	var book model.Book
 	if err := context.ShouldBindUri(&booklistinfo); err != nil {
 		fmt.Println("request validation fail", err.Error())
@@ -74,11 +73,10 @@ func DeleteBookFromBooklist(context *gin.Context) {
 		return
 	}
 
-	fmt.Println(booklistinfo.ID)
-
 	IntID, _ := strconv.Atoi(booklistinfo.ID)
 
-	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
+	booklistmodel, err := service.GetBooklistByID(IntID)
+	if err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
@@ -92,7 +90,7 @@ func DeleteBookFromBooklist(context *gin.Context) {
 		return
 	}
 
-	if err := model.DeleteBookFromBooklist(&booklist, &book); err != nil {
+	if err := booklistmodel.DeleteBookFromBooklist(&book); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
@@ -100,7 +98,7 @@ func DeleteBookFromBooklist(context *gin.Context) {
 	}
 
 	fmt.Println("success create booklist record")
-	context.JSON(http.StatusOK, booklist)
+	context.JSON(http.StatusOK, booklistmodel.BooklistModel)
 
 }
 
@@ -124,7 +122,7 @@ func GetBooklistByAccount(context *gin.Context) {
 		})
 		return
 	}
-	if err := model.GetBooklistByAccount(&booklist, &account); err != nil {
+	if err := service.GetBooklistByAccount(&booklist, &account); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
@@ -134,37 +132,37 @@ func GetBooklistByAccount(context *gin.Context) {
 	context.JSON(http.StatusOK, booklist)
 }
 
-func CreateOrderRemovelist(context *gin.Context) {
-	var booklist model.Booklist
-	var booklistinfo model.InsertBooklistInfo
+// func CreateOrderRemovelist(context *gin.Context) {
+// 	var booklist model.Booklist
+// 	var booklistinfo model.InsertBooklistInfo
 
-	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
-	id := booklistinfo.BookID
-	var book model.Book
+// 	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
+// 	id := booklistinfo.BookID
+// 	var book model.Book
 
-	if err := model.GetBookByID(&book, id); err != nil {
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+// 	if err := model.GetBookByID(&book, id); err != nil {
+// 		context.JSON(http.StatusNotFound, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	IntID, _ := strconv.Atoi(booklistinfo.ID)
-	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+// 	IntID, _ := strconv.Atoi(booklistinfo.ID)
+// 	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
+// 		context.JSON(http.StatusNotFound, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	if err := model.InsertBookInBooklist(&booklist, &book); err != nil {
-		fmt.Println(err.Error())
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+// 	if err := model.InsertBookInBooklist(&booklist, &book); err != nil {
+// 		fmt.Println(err.Error())
+// 		context.JSON(http.StatusNotFound, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	fmt.Println("success create booklist record")
-	context.JSON(http.StatusOK, booklist)
-}
+// 	fmt.Println("success create booklist record")
+// 	context.JSON(http.StatusOK, booklist)
+// }

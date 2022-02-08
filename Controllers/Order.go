@@ -16,7 +16,6 @@ import (
 // @Success 200 {string} json "{"msg":"ok"}"
 // @Router /api/v1/order [post]
 func CreateOrder(context *gin.Context) {
-	var booklist model.Booklist
 	var orderinfo service.CreateOrderByListInfo
 
 	if err := context.ShouldBindBodyWith(&orderinfo, binding.JSON); err != nil {
@@ -28,15 +27,23 @@ func CreateOrder(context *gin.Context) {
 	}
 	// ======= get book-list record =======
 	IntListID, _ := strconv.Atoi(orderinfo.BooklistID)
-	if err := model.GetBooklistByID(&booklist, IntListID); err != nil {
+
+	booklistmodel, err := service.GetBooklistByID(IntListID)
+	if err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+	// if err := model.GetBooklistByID(&booklist, IntListID); err != nil {
+	// 	context.JSON(http.StatusNotFound, gin.H{
+	// 		"error": err.Error(),
+	// 	})
+	// 	return
+	// }
 	// ======get account record ========
 	var account model.Account
-	if err := model.GetAccount(&account, booklist.AccountEmail); err != nil {
+	if err := model.GetAccount(&account, booklistmodel.BooklistModel.AccountEmail); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
@@ -72,7 +79,7 @@ func CreateOrder(context *gin.Context) {
 
 		// ==========   ============
 		var order model.Order
-		if err := service.CreateOderRemoveList(&order, orderinfo.Orders[i].Days, &book, &account, &booklist); err != nil {
+		if err := service.CreateOderRemoveList(&order, orderinfo.Orders[i].Days, &book, &account, &(booklistmodel.BooklistModel)); err != nil {
 			context.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
@@ -81,7 +88,7 @@ func CreateOrder(context *gin.Context) {
 	}
 
 	fmt.Println("success create order record")
-	context.JSON(http.StatusOK, booklist)
+	context.JSON(http.StatusOK, booklistmodel.BooklistModel)
 }
 
 // @Summary return order

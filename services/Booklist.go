@@ -81,7 +81,7 @@ func GetBooklistByAccount(booklist *model.Booklist, account *model.Account) (err
 	return nil
 }
 
-func (this Booklist) DeleteBookFromBooklist(book *Book) (err error) {
+func (this Booklist) DeleteBookFromBooklist(book *model.Book) (err error) {
 
 	return database.DB.Transaction(func(tx *gorm.DB) error {
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
