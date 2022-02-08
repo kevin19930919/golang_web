@@ -49,7 +49,7 @@ func setupServer() *gin.Engine {
 	indexRouter := router.Group("/login")
 	{
 		indexRouter.GET("", func(c *gin.Context) {
-			c.HTML(http.StatusOK, "index.html", nil)
+			c.HTML(http.StatusOK, "login.html", nil)
 		})
 	}
 	BookRouter := router.Group("/books")

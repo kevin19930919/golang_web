@@ -249,7 +249,7 @@
     }
 
     function delete_from_booklist(book_id) {
-        fetch(`/api/v1/booklist/${booklist_id}/book/${book_id}`, {
+        fetch(`/api/v1/booklist/${list_id}/book/${book_id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${get_jwt_token()}`,

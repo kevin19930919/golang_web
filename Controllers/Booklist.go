@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"golang_web/model"
+	"golang_web/services"
 	"net/http"
 	"strconv"
 )
@@ -15,7 +16,6 @@ import (
 // @Success 200 {string} json "{"msg":"ok"}"
 // @Router /api/v1/booklist/{list_id}/book/{book_id} [post]
 func InsertBookInBooklist(context *gin.Context) {
-	var booklist model.Booklist
 	var booklistinfo model.InsertBooklistInfo
 
 	context.ShouldBindBodyWith(&booklistinfo, binding.JSON)
@@ -30,15 +30,23 @@ func InsertBookInBooklist(context *gin.Context) {
 	}
 
 	IntID, _ := strconv.Atoi(booklistinfo.ID)
-	if err := model.GetBooklistByID(&booklist, IntID); err != nil {
+
+	booklistmodel, err := service.GetBooklistByID(IntID)
+	if err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+	book_not_in_booklist := booklistmodel.CheckBookNotInBooklist(id)
+	if book_not_in_booklist == false {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": "book haved add in booklist before",
+		})
+		return
+	}
 
-	if err := model.InsertBookInBooklist(&booklist, &book); err != nil {
-		fmt.Println(err.Error())
+	if err := booklistmodel.InsertBookInBooklist(&book); err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
@@ -46,7 +54,7 @@ func InsertBookInBooklist(context *gin.Context) {
 	}
 
 	fmt.Println("success create booklist record")
-	context.JSON(http.StatusOK, booklist)
+	context.JSON(http.StatusOK, booklistmodel.BooklistModel)
 }
 
 // @Summary delete booklist record

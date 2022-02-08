@@ -161,6 +161,7 @@
         fetch(`/api/v1/book`, {
             headers: { 'Authorization': `Bearer ${get_jwt_token()}` }
         }).then(function (response) {
+            console.log(response)
             return response.json()
         }).then(function (result) {
             construct_book_card(result)
@@ -188,12 +189,12 @@
         text_card_div.className = "card-body"
 
         var text_div = document.createElement("p")
-        text_div.innerHTML = book_info["Desc"]
+        text_div.innerHTML = book_info["desc"]
 
         var button_div = document.createElement("button")
         button_div.className = "btn btn-sm btn-outline-secondary"
         button_div.innerHTML = "Add in booking list"
-        button_div.onclick = function () { add_in_bookist(book_info['ID']) };
+        button_div.onclick = function () { add_in_booklist(book_info['ID']) };
 
         book_card = append_all_tag(parent_node, card_shadow, title_div, img_div, text_card_div, text_div, button_div)
         return book_card
@@ -219,7 +220,7 @@
         }
     }
 
-    function add_in_bookist(book_id) {
+    function add_in_booklist(book_id) {
         fetch(`/api/v1/booklist/`, {
             method: 'PATCH',
             headers: {

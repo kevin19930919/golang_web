@@ -31,6 +31,7 @@ func JWTAuthMiddleware() func(context *gin.Context) {
 		context.Set("email", mc.Email)
 		err = database.Rdb.Set(context, "email", mc.Email, 0).Err()
 		if err != nil {
+			fmt.Println("read redis error", err)
 			panic(err)
 		}
 		context.Next()

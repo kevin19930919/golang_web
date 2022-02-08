@@ -71,16 +71,11 @@ func GetUnReturnOrderByAccount(orders *[]model.Order, account *model.Account) (e
 	if err = database.DB.Preload("Book").Preload("Account").Where("account_email = ?", account.Email).Where("state = ?", false).Find(&orders).Error; err != nil {
 		return err
 	}
-	// fmt.Println("?????????", orders)
-	// if err = database.DB.Preload("Book").Preload("Account").Find(&orders).Error; err != nil {
-	// 	return err
-	// }
-	fmt.Println("???????", orders)
 	return nil
 }
 
 func (this *Order) GetOrderByID(order *model.Order) (err error) {
-	if err = database.DB.Where("id = ?", this.OrderID).First(&order).Error; err != nil {
+	if err := database.DB.Where("id = ?", this.OrderID).First(&order).Error; err != nil {
 		fmt.Println("fail to get order model by id", err)
 		return err
 	}
@@ -89,7 +84,9 @@ func (this *Order) GetOrderByID(order *model.Order) (err error) {
 
 func (this *Order) ReturnBooks() (err error) {
 	var order model.Order
-	this.GetOrderByID(&order)
+	if err := this.GetOrderByID(&order); err != nil {
+		return err
+	}
 	return database.DB.Transaction(func(tx *gorm.DB) error {
 		// preload book table
 		if err := tx.Preload("Book").Find(&order).Error; err != nil {
