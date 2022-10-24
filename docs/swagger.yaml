@@ -17,26 +17,6 @@ definitions:
       title:
         type: string
     type: object
-  model.CreateBooklistInfo:
-    properties:
-      account_email:
-        type: string
-      book_ids:
-        items:
-          type: string
-        type: array
-    type: object
-  model.CreateOrderInfo:
-    properties:
-      account_email:
-        type: string
-      book_ids:
-        items:
-          type: string
-        type: array
-      remain_time:
-        type: number
-    type: object
   model.CreateTodoModel:
     properties:
       completed:
@@ -44,12 +24,41 @@ definitions:
       title:
         type: string
     type: object
+  model.InsertBooklistInfo:
+    properties:
+      book_id:
+        type: string
+      list_id:
+        type: string
+    required:
+    - book_id
+    - list_id
+    type: object
   model.LoginInfo:
     properties:
       email:
         type: string
       password:
         type: string
+    type: object
+  service.CreateOrderByListInfo:
+    properties:
+      list_id:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/service.OrderDetail'
+        type: array
+    type: object
+  service.OrderDetail:
+    properties:
+      book_id:
+        type: string
+      end_date:
+        type: string
+    required:
+    - book_id
+    - end_date
     type: object
 info:
   contact: {}
@@ -92,16 +101,6 @@ paths:
           schema:
             type: string
       summary: get account record
-  /api/v1/account/{email}/order:
-    get:
-      parameters:
-      - description: email
-        in: path
-        name: email
-        required: true
-        type: string
-      responses: {}
-      summary: get order by account
   /api/v1/book:
     get:
       responses:
@@ -140,7 +139,25 @@ paths:
           schema:
             type: string
       summary: get book record
-  /api/v1/booklist:
+  /api/v1/booklist/{list_id}/book/{book_id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: book_id
+        in: query
+        name: book_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"msg":"ok"}'
+          schema:
+            type: string
+      summary: delete booklist record
     post:
       consumes:
       - application/json
@@ -150,29 +167,13 @@ paths:
         name: title
         required: true
         schema:
-          $ref: '#/definitions/model.CreateBooklistInfo'
+          $ref: '#/definitions/model.InsertBooklistInfo'
       responses:
         "200":
           description: '{"msg":"ok"}'
           schema:
             type: string
       summary: create booklist record
-  /api/v1/booklist/{id}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: id
-        in: path
-        name: title
-        required: true
-        type: string
-      responses:
-        "200":
-          description: '{"msg":"ok"}'
-          schema:
-            type: string
-      summary: delete booklist record
   /api/v1/login:
     post:
       consumes:
@@ -195,12 +196,12 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: order
+      - description: book-list
         in: body
         name: title
         required: true
         schema:
-          $ref: '#/definitions/model.CreateOrderInfo'
+          $ref: '#/definitions/service.CreateOrderByListInfo'
       responses:
         "200":
           description: '{"msg":"ok"}'
@@ -209,10 +210,8 @@ paths:
       summary: add order record
   /api/v1/order/{id}:
     patch:
-      consumes:
-      - application/json
       parameters:
-      - description: id
+      - description: order_id
         in: path
         name: id
         required: true
@@ -222,7 +221,11 @@ paths:
           description: '{"msg":"ok"}'
           schema:
             type: string
-      summary: add order record
+      summary: return order
+  /api/v1/test/not-use-tag:
+    get:
+      responses: {}
+      summary: check what happen if not use json tag
   /api/v1/todo:
     get:
       responses:

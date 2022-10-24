@@ -64,21 +64,6 @@
                 }
             }
         },
-        "/api/v1/account/{email}/order": {
-            "get": {
-                "summary": "get order by account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "email",
-                        "name": "email",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/api/v1/book": {
             "get": {
                 "summary": "get all book record",
@@ -139,7 +124,7 @@
                 }
             }
         },
-        "/api/v1/booklist": {
+        "/api/v1/booklist/{list_id}/book/{book_id}": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -152,7 +137,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateBooklistInfo"
+                            "$ref": "#/definitions/model.InsertBooklistInfo"
                         }
                     }
                 ],
@@ -164,20 +149,22 @@
                         }
                     }
                 }
-            }
-        },
-        "/api/v1/booklist/{id}": {
+            },
             "delete": {
-                "consumes": [
-                    "application/json"
-                ],
                 "summary": "delete booklist record",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "id",
-                        "name": "title",
+                        "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "book_id",
+                        "name": "book_id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -226,12 +213,12 @@
                 "summary": "add order record",
                 "parameters": [
                     {
-                        "description": "order",
+                        "description": "book-list",
                         "name": "title",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateOrderInfo"
+                            "$ref": "#/definitions/service.CreateOrderByListInfo"
                         }
                     }
                 ],
@@ -247,14 +234,11 @@
         },
         "/api/v1/order/{id}": {
             "patch": {
-                "consumes": [
-                    "application/json"
-                ],
-                "summary": "add order record",
+                "summary": "return order",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
+                        "description": "order_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -268,6 +252,12 @@
                         }
                     }
                 }
+            }
+        },
+        "/api/v1/test/not-use-tag": {
+            "get": {
+                "summary": "check what happen if not use json tag",
+                "responses": {}
             }
         },
         "/api/v1/todo": {
@@ -360,37 +350,6 @@
                 }
             }
         },
-        "model.CreateBooklistInfo": {
-            "type": "object",
-            "properties": {
-                "account_email": {
-                    "type": "string"
-                },
-                "book_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "model.CreateOrderInfo": {
-            "type": "object",
-            "properties": {
-                "account_email": {
-                    "type": "string"
-                },
-                "book_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "remain_time": {
-                    "type": "number"
-                }
-            }
-        },
         "model.CreateTodoModel": {
             "type": "object",
             "properties": {
@@ -402,6 +361,21 @@
                 }
             }
         },
+        "model.InsertBooklistInfo": {
+            "type": "object",
+            "required": [
+                "book_id",
+                "list_id"
+            ],
+            "properties": {
+                "book_id": {
+                    "type": "string"
+                },
+                "list_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.LoginInfo": {
             "type": "object",
             "properties": {
@@ -409,6 +383,35 @@
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.CreateOrderByListInfo": {
+            "type": "object",
+            "properties": {
+                "list_id": {
+                    "type": "string"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.OrderDetail"
+                    }
+                }
+            }
+        },
+        "service.OrderDetail": {
+            "type": "object",
+            "required": [
+                "book_id",
+                "end_date"
+            ],
+            "properties": {
+                "book_id": {
+                    "type": "string"
+                },
+                "end_date": {
                     "type": "string"
                 }
             }

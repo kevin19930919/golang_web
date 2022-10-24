@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang_web/Controllers"
-	"golang_web/config"
+	database "golang_web/config"
 	"golang_web/middleware"
 	"golang_web/model"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 var ctx = context.Background()
@@ -103,6 +104,11 @@ func setupServer() *gin.Engine {
 	LoginAPI := router.Group("/api/v1/login")
 	{
 		LoginAPI.POST("", Controllers.Login)
+	}
+
+	TestAPI := router.Group("/api/v1/test")
+	{
+		TestAPI.GET("not-use-tag", Controllers.NotUseTag)
 	}
 
 	return router
